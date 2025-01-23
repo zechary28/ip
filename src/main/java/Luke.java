@@ -4,10 +4,16 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 public class Luke {
+
+    public static String[] list;
+
     public static void main(String[] args) throws IOException {
         //io
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter writer = new PrintWriter(System.out);
+
+        //data structures
+        list = new String[100];
 
         String logo = " _           _        \n"
                 + "| |    _   _| | _____ \n"
@@ -38,5 +44,13 @@ public class Luke {
         System.out.println("Bye. Hope to see you again soon!");
         printLine();
         System.exit(0);
+    }
+
+    public static void printList() {
+        int i = 0;
+        for (String task: list) {
+            System.out.println(((i+1) + ". " + list[i]));
+            i++;
+        }
     }
 }
