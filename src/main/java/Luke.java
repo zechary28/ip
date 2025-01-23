@@ -38,7 +38,25 @@ public class Luke {
 
         @Override
         public String toString() {
-            return String.format("[D][%s] %s", this.isDone?"X":" ", this.name);
+            return String.format("[D][%s] %s (by: %s)", this.isDone?"X":" ", this.name);
+        }
+    }
+
+    public class ToDo extends Task {
+
+        protected String dueDate;
+
+        public ToDo(String name) {
+            super(name);
+        }
+
+        public void setIsDone(boolean isDone) {
+            this.isDone = isDone;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[T][%s] %s", this.isDone?"X":" ", this.name);
         }
     }
 
