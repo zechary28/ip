@@ -21,8 +21,9 @@ public class Luke {
             this.isDone = true;
         }
 
-        public void printTask(int i) {
-            System.out.println(String.format("%d. [%s] %s", i, this.name, this.isDone?"X":" "));
+        @Override
+        public String toString() {
+            return String.format("[%s] %s", this.isDone?"X":" ", this.name);
         }
     }
 
@@ -71,7 +72,7 @@ public class Luke {
 
     public static void printList() {
         for (int i = 0; i < numItems; i++) {
-            System.out.println(((i+1) + ". " + list[i]));
+            System.out.println(String.format("%s. %s",i+1, list[i]));
         }
     }
 }
