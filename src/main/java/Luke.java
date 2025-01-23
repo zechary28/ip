@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 public class Luke {
 
     public static String[] list;
+    public static int numItems;
 
     public static void main(String[] args) throws IOException {
         //io
@@ -24,12 +25,14 @@ public class Luke {
         System.out.println("Hello I'm\n" + logo);
         System.out.println("What can I do for you?");
 
-        int i = 0;
+        numItems = 0;
         while (true) {
             String input = reader.readLine();
             if (input.equals("bye")) exit();
+            else if (input.equals("list")) printList();
             else {
-                list[i] = input;
+                list[numItems] = input;
+                numItems++;
                 printLine();
                 System.out.println("added: " + input);
                 printLine();
@@ -49,10 +52,8 @@ public class Luke {
     }
 
     public static void printList() {
-        int i = 0;
-        for (String task: list) {
+        for (int i = 0; i < numItems; i++) {
             System.out.println(((i+1) + ". " + list[i]));
-            i++;
         }
     }
 }
