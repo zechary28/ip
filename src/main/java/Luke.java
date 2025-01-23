@@ -21,7 +21,11 @@ public class Luke {
         while (true) {
             String input = reader.readLine();
             if (input.equals("bye")) exit();
-            else System.out.println(input);
+            else {
+                printLine();
+                System.out.println(input);
+                printLine();
+            }
         }
     }
 
@@ -33,5 +37,6 @@ public class Luke {
         printLine();
         System.out.println("Bye. Hope to see you again soon!");
         printLine();
+        System.exit(0);
     }
 }
