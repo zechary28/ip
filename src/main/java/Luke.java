@@ -17,8 +17,8 @@ public class Luke {
             this.isDone = false;
         }
 
-        public void markDone() {
-            this.isDone = true;
+        public void setIsDone(boolean isDone) {
+            this.isDone = isDone;
         }
 
         @Override
@@ -47,8 +47,11 @@ public class Luke {
         numItems = 0;
         while (true) {
             String input = reader.readLine();
-            if (input.equals("bye")) exit();
-            else if (input.equals("list")) printList();
+            String[] inputArr = input.split(" ");
+            if (inputArr[0].equals("bye")) exit();
+            else if (inputArr[0].equals("mark")) markTask(Integer.parseInt(inputArr[1]), true);
+            else if (inputArr[0].equals("unmark")) markTask(Integer.parseInt(inputArr[1]), false);
+            else if (inputArr[0].equals("list")) printList();
             else {
                 list[numItems] = new Task(input);
                 numItems++;
@@ -74,5 +77,15 @@ public class Luke {
         for (int i = 0; i < numItems; i++) {
             System.out.println(String.format("%s. %s",i+1, list[i]));
         }
+    }
+
+    public static void markTask(int i, boolean isDone) {
+        Task task = list[i-1];
+        task.setIsDone(isDone);
+        printLine();
+        if (isDone) System.out.println("Nice! I've marked this task as done:");
+        else System.out.println("OK, I've marked this task as not done yet:");
+        System.out.println(task.toString());
+        printLine();
     }
 }
