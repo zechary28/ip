@@ -5,8 +5,26 @@ import java.io.PrintWriter;
 
 public class Luke {
 
-    public static String[] list;
+    public static Task[] list;
     public static int numItems;
+
+    public static class Task {
+        private String name;
+        private boolean isDone;
+
+        public Task(String name) {
+            this.name = name;
+            this.isDone = false;
+        }
+
+        public void markDone() {
+            this.isDone = true;
+        }
+
+        public void printTask(int i) {
+            System.out.println(String.format("%d. [%s] %s", i, this.name, this.isDone?"X":" "));
+        }
+    }
 
     public static void main(String[] args) throws IOException {
         //io
@@ -14,7 +32,7 @@ public class Luke {
         PrintWriter writer = new PrintWriter(System.out);
 
         //data structures
-        list = new String[100];
+        list = new Task[100];
 
         String logo = " _           _        \n"
                 + "| |    _   _| | _____ \n"
@@ -31,7 +49,7 @@ public class Luke {
             if (input.equals("bye")) exit();
             else if (input.equals("list")) printList();
             else {
-                list[numItems] = input;
+                list[numItems] = new Task(input);
                 numItems++;
                 printLine();
                 System.out.println("added: " + input);
