@@ -8,13 +8,28 @@ public class Luke {
     public static Task[] list;
     public static int numItems;
 
-    public static class Task {
-        private String name;
-        private boolean isDone;
+    public static abstract class Task {
+        protected String name;
+        protected boolean isDone;
 
         public Task(String name) {
             this.name = name;
             this.isDone = false;
+        }
+
+        public abstract void setIsDone(boolean isDone);
+
+        @Override
+        public abstract String toString();
+    }
+
+    public class Deadline extends Task {
+
+        protected String dueDate;
+
+        public Deadline(String name, String dueDate) {
+            super(name);
+            this.dueDate = dueDate;
         }
 
         public void setIsDone(boolean isDone) {
@@ -23,7 +38,7 @@ public class Luke {
 
         @Override
         public String toString() {
-            return String.format("[%s] %s", this.isDone?"X":" ", this.name);
+            return String.format("[D][%s] %s", this.isDone?"X":" ", this.name);
         }
     }
 
@@ -40,7 +55,7 @@ public class Luke {
                 + "| |   | | | | |/ / _ \\\n"
                 + "| |___| |_| |   <  __/\n"
                 + "|____/ \\__,_|_|\\_\\___|\n";
-        System.out.println("_____________________________________");
+        printLine();
         System.out.println("Hello I'm\n" + logo);
         System.out.println("What can I do for you?");
 
@@ -53,7 +68,7 @@ public class Luke {
             else if (inputArr[0].equals("unmark")) markTask(Integer.parseInt(inputArr[1]), false);
             else if (inputArr[0].equals("list")) printList();
             else {
-                list[numItems] = new Task(input);
+//                list[numItems] = new Task(input);
                 numItems++;
                 printLine();
                 System.out.println("added: " + input);
@@ -75,7 +90,7 @@ public class Luke {
 
     public static void printList() {
         for (int i = 0; i < numItems; i++) {
-            System.out.println(String.format("%s. %s",i+1, list[i]));
+            System.out.println(String.format("%d. %s",i+1, list[i]));
         }
     }
 
