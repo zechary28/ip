@@ -24,12 +24,14 @@ public class Luke {
         System.out.println("Hello I'm\n" + logo);
         System.out.println("What can I do for you?");
 
+        int i = 0;
         while (true) {
             String input = reader.readLine();
             if (input.equals("bye")) exit();
             else {
+                list[i] = input;
                 printLine();
-                System.out.println(input);
+                System.out.println("added: " + input);
                 printLine();
             }
         }
