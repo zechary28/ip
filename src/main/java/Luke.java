@@ -23,25 +23,6 @@ public class Luke {
         public abstract String toString();
     }
 
-    public class Deadline extends Task {
-
-        protected String dueDate;
-
-        public Deadline(String name, String dueDate) {
-            super(name);
-            this.dueDate = dueDate;
-        }
-
-        public void setIsDone(boolean isDone) {
-            this.isDone = isDone;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("[D][%s] %s (by: %s)", this.isDone?"X":" ", this.name);
-        }
-    }
-
     public class ToDo extends Task {
 
         protected String dueDate;
@@ -57,6 +38,46 @@ public class Luke {
         @Override
         public String toString() {
             return String.format("[T][%s] %s", this.isDone?"X":" ", this.name);
+        }
+    }
+
+    public class Deadline extends Task {
+
+        protected String dueTime;
+
+        public Deadline(String name, String dueTime) {
+            super(name);
+            this.dueTime = dueTime;
+        }
+
+        public void setIsDone(boolean isDone) {
+            this.isDone = isDone;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[D][%s] %s (by: %s)", this.isDone?"X":" ", this.name, this.dueTime);
+        }
+    }
+
+    public class Event extends Task {
+
+        protected String startTime;
+        protected String endTime;
+
+        public Event(String name, String start, String end) {
+            super(name);
+            this.startTime = start;
+            this.endTime = end;
+        }
+
+        public void setIsDone(boolean isDone) {
+            this.isDone = isDone;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("[E][%s] %s (from: %s to %s)", this.isDone?"X":" ", this.name, this.startTime, this.endTime);
         }
     }
 
