@@ -23,7 +23,7 @@ public class Luke {
         public abstract String toString();
     }
 
-    public class ToDo extends Task {
+    public static class ToDo extends Task {
 
         protected String dueDate;
 
@@ -41,7 +41,7 @@ public class Luke {
         }
     }
 
-    public class Deadline extends Task {
+    public static class Deadline extends Task {
 
         protected String dueTime;
 
@@ -60,7 +60,7 @@ public class Luke {
         }
     }
 
-    public class Event extends Task {
+    public static class Event extends Task {
 
         protected String startTime;
         protected String endTime;
@@ -77,7 +77,7 @@ public class Luke {
 
         @Override
         public String toString() {
-            return String.format("[E][%s] %s (from: %s to %s)", this.isDone?"X":" ", this.name, this.startTime, this.endTime);
+            return String.format("[E][%s] %s (from: %s to: %s)", this.isDone?"X":" ", this.name, this.startTime, this.endTime);
         }
     }
 
@@ -106,11 +106,28 @@ public class Luke {
             else if (inputArr[0].equals("mark")) markTask(Integer.parseInt(inputArr[1]), true);
             else if (inputArr[0].equals("unmark")) markTask(Integer.parseInt(inputArr[1]), false);
             else if (inputArr[0].equals("list")) printList();
-            else {
-//                list[numItems] = new Task(input);
-                numItems++;
+            else { // add tasks
+                String type = inputArr[0];
+                if (type.equals("todo")) list[numItems] = new ToDo(input.substring(5));
+                else if (type.equals("deadline")) {
+                    input = input.substring(9); // trip type
+                    inputArr = input.split(" /by ");
+                    String name = inputArr[0];
+                    String due = inputArr[1];
+                    list[numItems] = new Deadline(name, due);
+                } else if (type.equals("event")) {
+                    input = input.substring(6); // extract type
+                    inputArr = input.split(" /from "); input = inputArr[1];
+                    String name = inputArr[0]; // extract name
+                    inputArr = input.split(" /to ");
+                    String start = inputArr[0];
+                    String end = inputArr[1];
+                    list[numItems] = new Event(name, start, end);
+                }
                 printLine();
-                System.out.println("added: " + input);
+                System.out.println("added: " + list[numItems]);
+                numItems++;
+                System.out.println("Now you have " + numItems + "tasks in the list.");
                 printLine();
             }
         }
@@ -142,4 +159,5 @@ public class Luke {
         System.out.println(task.toString());
         printLine();
     }
+
 }
