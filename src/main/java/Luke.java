@@ -87,7 +87,7 @@ public class Luke {
     // exceptions
     public static class InvalidInputException extends Exception {}
 
-    public static void main(String[] args) throws IOException, InvalidInputException {
+    public static void main(String[] args) throws IOException, InvalidInputException, NumberFormatException {
         //io
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter writer = new PrintWriter(System.out);
@@ -112,12 +112,14 @@ public class Luke {
                     throw new InvalidInputException();
                 }
                 String[] inputArr = input.split(" ");
-                if (inputArr[0].equals("bye")) exit();
-                else if (inputArr[0].equals("mark")) markTask(Integer.parseInt(inputArr[1]), true);
-                else if (inputArr[0].equals("unmark")) markTask(Integer.parseInt(inputArr[1]), false);
-                else if (inputArr[0].equals("list")) printList();
+                String command = inputArr[0];
+                if (command.equals("bye")) exit();
+                else if (command.equals("mark")) markTask(Integer.parseInt(inputArr[1]) - 1, true);
+                else if (command.equals("unmark")) markTask(Integer.parseInt(inputArr[1]) - 1, false);
+                else if (command.equals("list")) printList();
+                else if (command.equals("delete")) deleteTask(Integer.parseInt(inputArr[1]) - 1);
                 else { // add tasks
-                    String type = inputArr[0];
+                    String type = command;
                     if (type.equals("todo")) {
                         handleToDo(input);
                     } else if (type.equals("deadline")) {
@@ -245,7 +247,7 @@ public class Luke {
     }
 
     public static void markTask(int i, boolean isDone) {
-        Task task = list.get(i-1);
+        Task task = list.get(i);
         task.setIsDone(isDone);
         printLine();
         if (isDone) {
