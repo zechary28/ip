@@ -85,7 +85,7 @@ public class Luke {
     }
 
     // exceptions
-    public class InvalidInputException extends Exception {}
+    public static class InvalidInputException extends Exception {}
 
     public static void main(String[] args) throws IOException, InvalidInputException {
         //io
@@ -106,22 +106,45 @@ public class Luke {
 
         numItems = 0;
         while (true) {
-            String input = reader.readLine();
-            String[] inputArr = input.split(" ");
-            if (inputArr[0].equals("bye")) exit();
-            else if (inputArr[0].equals("mark")) markTask(Integer.parseInt(inputArr[1]), true);
-            else if (inputArr[0].equals("unmark")) markTask(Integer.parseInt(inputArr[1]), false);
-            else if (inputArr[0].equals("list")) printList();
-            else { // add tasks
-                String type = inputArr[0];
-                if (type.equals("todo")) {
-                    handleToDo(input);
-                } else if (type.equals("deadline")) {
-                    handleDeadline(input);
-                } else if (type.equals("event")) {
-                    handleEvent(input);
+            try {
+                String input = reader.readLine();
+                if (input == null || input.trim().isEmpty()) {
+                    throw new InvalidInputException();
                 }
-                addTaskUpdates();
+                String[] inputArr = input.split(" ");
+                if (inputArr[0].equals("bye")) exit();
+                else if (inputArr[0].equals("mark")) markTask(Integer.parseInt(inputArr[1]), true);
+                else if (inputArr[0].equals("unmark")) markTask(Integer.parseInt(inputArr[1]), false);
+                else if (inputArr[0].equals("list")) printList();
+                else { // add tasks
+                    String type = inputArr[0];
+                    if (type.equals("todo")) {
+                        handleToDo(input);
+                    } else if (type.equals("deadline")) {
+                        handleDeadline(input);
+                    } else if (type.equals("event")) {
+                        handleEvent(input);
+                    } else {
+                        throw new InvalidInputException();
+                    }
+                    addTaskUpdates();
+                }
+            } catch (InvalidInputException e) {
+                printLine();
+                System.out.println(" OOPS!!! I'm sorry, but I don't know what that means or the input is invalid.");
+                printLine();
+            } catch (NumberFormatException e) {
+                printLine();
+                System.out.println(" OOPS!!! Invalid number format. Please enter a valid index.");
+                printLine();
+            } catch (ArrayIndexOutOfBoundsException e) {
+                printLine();
+                System.out.println(" OOPS!!! Input is missing required arguments.");
+                printLine();
+            } catch (Exception e) {
+                printLine();
+                System.out.println(" OOPS!!! An unexpected error occurred: " + e.getMessage());
+                printLine();
             }
         }
     }
@@ -138,25 +161,43 @@ public class Luke {
         System.exit(0);
     }
 
-    public static void handleToDo(String input) {
+    public static void handleToDo(String input) throws InvalidInputException {
+        // invalid input: "todo" or "todo "
+        if (input.length() < 5 || input.substring(5).trim().isEmpty()) {
+            throw new InvalidInputException();
+        }
         list.add(new ToDo(input.substring(5)));
     }
 
-    public static void handleDeadline(String input) {
-        input = input.substring(9); // trip type
-        String[] inputArr = input.split(" /by ");
+    public static void handleDeadline(String input) throws InvalidInputException {
+        // invalid input: [deadline] or [deadline ]
+        if (input.length() < 9 || input.substring(9).trim().isEmpty()) {
+            System.out.println("invalid input: [deadline] or [deadline ]");
+            throw new InvalidInputException();
+        }
+        String[] inputArr = input.substring(9).split(" /by ");
+        // invalid input: [deadline *** /by ] or [deadline /by ***]
+        if (inputArr.length < 2) {
+            System.out.println("invalid input: [deadline /by ]");
+            throw new InvalidInputException();
+        }
         String name = inputArr[0];
         String due = inputArr[1];
+
+        if (name.trim().isEmpty() || due.trim().isEmpty()) throw new InvalidInputException();
         list.add(new Deadline(name, due));
     }
 
-    public static void handleEvent(String input) {
+    public static void handleEvent(String input) throws InvalidInputException {
+        if (input.length() < 6) throw new InvalidInputException();
         input = input.substring(6); // extract type
         String[] inputArr = input.split(" /from "); input = inputArr[1];
         String name = inputArr[0]; // extract name
+        if (name.trim().isEmpty()) throw new InvalidInputException();
         inputArr = input.split(" /to ");
         String start = inputArr[0];
         String end = inputArr[1];
+        if (start.trim().isEmpty() || end.trim().isEmpty()) throw new InvalidInputException();
         list.add(new Event(name, start, end));
     }
 
