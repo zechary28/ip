@@ -37,10 +37,18 @@ ____________________________________________________________
    [D][ ] return book (by: Sunday)
 ____________________________________________________________
 ____________________________________________________________
+ Noted. I've removed this task:
+   [T][ ] borrow book
+ Now you have 2 tasks in the list.
+____________________________________________________________
+invalid input: [deadline] or [deadline ]
+____________________________________________________________
+ OOPS!!! I'm sorry, but I don't know what that means or the input is invalid.
+____________________________________________________________
+____________________________________________________________
  Here are the tasks in your list:
- 1.[T][ ] borrow book
- 2.[D][ ] return book (by: Sunday)
- 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+ 1.[D][ ] return book (by: Sunday)
+ 2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ____________________________________________________________
 ____________________________________________________________
  Bye. Hope to see you again soon!
