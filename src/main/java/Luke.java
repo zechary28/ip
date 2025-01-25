@@ -162,11 +162,13 @@ public class Luke {
     }
 
     public static void handleToDo(String input) throws InvalidInputException {
-        // invalid input: "todo" or "todo "
+        // invalid input: [todo] or [todo ]
         if (input.length() < 5 || input.substring(5).trim().isEmpty()) {
+            System.out.println("invalid input: [todo] or [todo ]");
             throw new InvalidInputException();
         }
-        list.add(new ToDo(input.substring(5)));
+        String name = input.substring(5);
+        list.add(new ToDo(name));
     }
 
     public static void handleDeadline(String input) throws InvalidInputException {
@@ -178,23 +180,46 @@ public class Luke {
         String[] inputArr = input.substring(9).split(" /by ");
         // invalid input: [deadline *** /by ] or [deadline /by ***]
         if (inputArr.length < 2) {
-            System.out.println("invalid input: [deadline /by ]");
+            System.out.println(inputArr[0]);
+            System.out.println("invalid input: [deadline *** /by ] or [deadline /by ***]");
             throw new InvalidInputException();
         }
+        System.out.println(inputArr[0]);
+        System.out.println(inputArr[1]);
         String name = inputArr[0];
         String due = inputArr[1];
-
-        if (name.trim().isEmpty() || due.trim().isEmpty()) throw new InvalidInputException();
+        // invalid input: white spaces for name and deadline
+        if (name.trim().isEmpty() || due.trim().isEmpty()) {
+            System.out.println("invalid input: empty task name or deadline");
+            throw new InvalidInputException();
+        }
         list.add(new Deadline(name, due));
     }
 
     public static void handleEvent(String input) throws InvalidInputException {
-        if (input.length() < 6) throw new InvalidInputException();
-        input = input.substring(6); // extract type
-        String[] inputArr = input.split(" /from "); input = inputArr[1];
+        // invalid input: [event] or [event ]
+        if (input.length() < 6 || input.substring(6).trim().isEmpty()) {
+            System.out.println("invalid input: [event] or [event ]");
+            throw new InvalidInputException();
+        }
+
+        // split [name] /from [rest...]
+        String[] inputArr = input.substring(6).split(" /from ");
+        // invalid input: [event *** /from ] or [event /from ***]
+        if (inputArr.length < 2) {
+            System.out.println("invalid input: [event *** /from ] or [event /from ***]");
+            throw new InvalidInputException();
+        }
+        input = inputArr[1];
         String name = inputArr[0]; // extract name
-        if (name.trim().isEmpty()) throw new InvalidInputException();
+
+        // split [start] /by [end]
         inputArr = input.split(" /to ");
+        // invalid input: [event *** /from *** /to ] or [event *** /from /to ***]
+        if (inputArr.length < 2) {
+            System.out.println("invalid input: [event *** /from *** /to ] or [event *** /from /to ***]");
+            throw new InvalidInputException();
+        }
         String start = inputArr[0];
         String end = inputArr[1];
         if (start.trim().isEmpty() || end.trim().isEmpty()) throw new InvalidInputException();
