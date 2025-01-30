@@ -91,7 +91,7 @@ public class Luke {
     // exceptions
     public static class InvalidInputException extends Exception {}
 
-    public static void main(String[] args) throws IOException, InvalidInputException, NumberFormatException {
+    public static void main(String[] args) throws IOException, InvalidInputException, NumberFormatException, FileNotFoundException {
         //io
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter writer = new PrintWriter(System.out);
@@ -106,10 +106,26 @@ public class Luke {
                 + "|____/ \\__,_|_|\\_\\___|\n";
         printLine();
         System.out.println("Hello I'm\n" + logo);
+        printLine();
+        boolean foundList = true;
         System.out.println("Checking for saved list...");
-        boolean foundList = readListFile();
-        if (!foundList) { // read file and build arraylist
+        try {
+            readListFile(); // will build the list
+        } catch (FileNotFoundException e) {
+            System.out.println("No list found");
+            System.out.println("Creating new list...");
             numItems = 0;
+            foundList = false;
+        } finally {
+
+            // print out existing list
+            if (foundList) {
+                System.out.println("Here is your current list:");
+                printList();
+                printLine();
+            }
+
+            // main loop
             while (true) {
                 try {
                     String input = reader.readLine();
@@ -118,7 +134,7 @@ public class Luke {
                     }
                     String[] inputArr = input.split(" ");
                     String command = inputArr[0];
-                    if (command.equals("bye")) exit();
+                    if (command.equals("bye")) break;
                     else if (command.equals("mark")) markTask(Integer.parseInt(inputArr[1]) - 1, true);
                     else if (command.equals("unmark")) markTask(Integer.parseInt(inputArr[1]) - 1, false);
                     else if (command.equals("list")) printList();
@@ -154,6 +170,7 @@ public class Luke {
                     printLine();
                 }
             }
+            exit();
         }
     }
 
@@ -275,23 +292,23 @@ public class Luke {
         printLine();
     }
 
-    public static boolean readListFile() throws FileNotFoundException {
+    public static void readListFile() throws FileNotFoundException {
         File file = new File(LIST_FILE_PATH);
         Scanner scanner = new Scanner(file);
         String header = scanner.nextLine();
         int num = Integer.parseInt(header.substring(6));
-        try {
-            while (scanner.hasNext()) {
-                readTask(scanner, scanner.nextLine());
+        while (scanner.hasNext()) {
+            String task = scanner.nextLine();
+            try {
+                readTask(scanner, task);
+            } catch (InvalidInputException e) {
+                printLine();
+                System.out.println(" There was something wrong with this task.");
+                System.out.println(" " + task);
+                printLine();
             }
-        } catch (InvalidInputException e) {
-            printLine();
-            System.out.println(" There was something wrong with the file.");
-            printLine();
-            return false;
+            numItems++;
         }
-        numItems = num;
-        return true;
     }
 
     public static void readTask(Scanner scanner, String input) throws InvalidInputException {
