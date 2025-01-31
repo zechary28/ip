@@ -6,12 +6,13 @@ import java.util.ArrayList;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
+import java.io.FileWriter;
 
 public class Luke {
 
     public static ArrayList<Task> list;
     public static int numItems;
-    public static final String LIST_FILE_PATH = "@/data/list.txt";
+    public static final String LIST_FILE_PATH = "../../../data/list.txt";
 
     // abstract class
     public static abstract class Task {
@@ -170,6 +171,7 @@ public class Luke {
                     printLine();
                 }
             }
+            writeListToFile();
             exit();
         }
     }
@@ -300,7 +302,7 @@ public class Luke {
         while (scanner.hasNext()) {
             String task = scanner.nextLine();
             try {
-                readTask(scanner, task);
+                readTask(task);
             } catch (InvalidInputException e) {
                 printLine();
                 System.out.println(" There was something wrong with this task.");
@@ -311,22 +313,31 @@ public class Luke {
         }
     }
 
-    public static void readTask(Scanner scanner, String input) throws InvalidInputException {
-        String[] task = scanner.nextLine().split(" : ");
+    public static void readTask(String input) throws InvalidInputException {
+        String[] task = input.split(" : ");
         String taskType = task[0];
         if (taskType.equals("T")) {
-            if (task.length < 3) throw new InvalidInputException();
+            if (task.length < 3) {
+//                System.out.println("len < 3");
+                throw new InvalidInputException();
+            }
             boolean isDone = task[1].equals("1");
             String name = task[2];
             list.add(new ToDo(name, isDone));
         } else if (taskType.equals("D")) {
-            if (task.length < 4) throw new InvalidInputException();
+            if (task.length < 4) {
+                System.out.println("len < 4");
+                throw new InvalidInputException();
+            }
             boolean isDone = task[1].equals("1");
             String name = task[2];
             String deadline = task[3];
             list.add(new Deadline(name, isDone, deadline));
         } else if (taskType.equals("E")) {
-            if (task.length < 5) throw new InvalidInputException();
+            if (task.length < 5) {
+                System.out.println("len < 5");
+                throw new InvalidInputException();
+            }
             boolean isDone = task[1].equals("1");
             String name = task[2];
             String start = task[3];
@@ -335,6 +346,36 @@ public class Luke {
         } else {
             throw new InvalidInputException();
         };
+    }
+
+    public static void writeListToFile() throws IOException, FileNotFoundException {
+        try {
+            System.out.println("Searching for list file...");
+            new FileWriter(LIST_FILE_PATH, false).close(); // clear file
+        } catch (IOException e) {
+            System.out.println("Could not find file " + e.getMessage());
+            System.out.println("Creating new file...");
+        } finally {
+            System.out.println("Saving list...");
+            FileWriter writer = new FileWriter(LIST_FILE_PATH, true);
+            writer.write(String.format("list: %d\n", numItems));
+            for (Task task : list) {
+                if (task instanceof ToDo) {
+                    ToDo todo = (ToDo) task;
+                    writer.write(String.format("T : %s : %s", todo.isDone? "1" : "0", todo.name));
+                } else if (task instanceof Deadline) {
+                    Deadline deadline = (Deadline) task;
+                    writer.write(String.format("D : %s : %s : %s", deadline.isDone? "1" : "0", deadline.name, deadline.dueTime));
+                } else if (task instanceof Event) {
+                    Event event = (Event) task;
+                    writer.write(String.format("E : %s : %s : %s : %s", event.isDone? "1" : "0", event.name, event.startTime, event.endTime));
+                }
+                writer.write("\n");
+            }
+            writer.flush();
+            writer.close();
+            System.out.println("Saved successfully");
+        }
     }
 
 }
