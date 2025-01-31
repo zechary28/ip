@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 import java.io.FileWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Luke {
 
@@ -51,11 +53,17 @@ public class Luke {
 
     public static class Deadline extends Task {
 
-        protected String dueTime;
+        protected LocalDateTime dueTime;
 
         public Deadline(String name, boolean isDone, String dueTime) {
             super(name, isDone);
-            this.dueTime = dueTime;
+            // input format of dueTime: [DD/MM/YYYY HH:MM]
+            // required format        : [YYYY:MM:DDTHH:MM:SS]
+            String day = dueTime.substring(0, 2), month = dueTime.substring(3, 5), year = dueTime.substring(6, 10);
+            String hour = dueTime.substring(11, 13), minute = dueTime.substring(14, 16);
+            String timeString = String.format("%s:%s:%sT%s:%s:00", year, month, day, hour, minute);
+            System.out.println(timeString);
+            this.dueTime = LocalDateTime.parse(timeString); // assume string is in correct format
         }
 
         public void setIsDone(boolean isDone) {
@@ -64,19 +72,30 @@ public class Luke {
 
         @Override
         public String toString() {
-            return String.format("[D][%s] %s (by: %s)", this.isDone?"X":" ", this.name, this.dueTime);
+            return String.format("[D][%s] %s (by: %s)", this.isDone?"X":" "
+                    , this.name, this.dueTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")));
         }
     }
 
     public static class Event extends Task {
 
-        protected String startTime;
-        protected String endTime;
+        protected LocalDateTime startTime;
+        protected LocalDateTime endTime;
 
         public Event(String name, boolean isDone, String start, String end) {
             super(name, isDone);
-            this.startTime = start;
-            this.endTime = end;
+            // input format of dueTime: [DD/MM/YYYY HH:MM]
+            // required format        : [YYYY:MM:DDTHH:MM:SS]
+            String startDay = start.substring(0, 2), startMonth = start.substring(3, 5), startYear = start.substring(6, 10);
+            String startHour = start.substring(11, 13), startMinute = start.substring(14, 16);
+            String startTimeString = String.format("%s:%s:%sT%s:%s:00", startYear, startMonth, startDay, startHour, startMinute);
+            System.out.println("start: " + startTimeString);
+            String endDay = start.substring(0, 2), endMonth = start.substring(3, 5), endYear = start.substring(6, 10);
+            String endHour = start.substring(11, 13), endMinute = start.substring(14, 16);
+            String endTimeString = String.format("%s:%s:%sT%s:%s:00", startYear, startMonth, startDay, startHour, startMinute);
+            System.out.println("end   : " + endTimeString);
+            this.startTime = LocalDateTime.parse(startTimeString);
+            this.endTime = LocalDateTime.parse(endTimeString);
         }
 
         public void setIsDone(boolean isDone) {
@@ -377,5 +396,4 @@ public class Luke {
             System.out.println("Saved successfully");
         }
     }
-
 }
