@@ -3,20 +3,25 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.io.FileWriter;
 
 public class Luke {
 
     public static ArrayList<Task> list;
     public static int numItems;
+    public static final String LIST_FILE_PATH = "../../../data/list.txt";
 
     // abstract class
     public static abstract class Task {
         protected String name;
         protected boolean isDone;
 
-        public Task(String name) {
+        public Task(String name, boolean isDone) {
             this.name = name;
-            this.isDone = false;
+            this.isDone = isDone;
         }
 
         public abstract void setIsDone(boolean isDone);
@@ -30,8 +35,8 @@ public class Luke {
 
         protected String dueDate;
 
-        public ToDo(String name) {
-            super(name);
+        public ToDo(String name, boolean isDone) {
+            super(name, isDone);
         }
 
         public void setIsDone(boolean isDone) {
@@ -48,8 +53,8 @@ public class Luke {
 
         protected String dueTime;
 
-        public Deadline(String name, String dueTime) {
-            super(name);
+        public Deadline(String name, boolean isDone, String dueTime) {
+            super(name, isDone);
             this.dueTime = dueTime;
         }
 
@@ -68,8 +73,8 @@ public class Luke {
         protected String startTime;
         protected String endTime;
 
-        public Event(String name, String start, String end) {
-            super(name);
+        public Event(String name, boolean isDone, String start, String end) {
+            super(name, isDone);
             this.startTime = start;
             this.endTime = end;
         }
@@ -87,7 +92,7 @@ public class Luke {
     // exceptions
     public static class InvalidInputException extends Exception {}
 
-    public static void main(String[] args) throws IOException, InvalidInputException, NumberFormatException {
+    public static void main(String[] args) throws IOException, InvalidInputException, NumberFormatException, FileNotFoundException {
         //io
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         PrintWriter writer = new PrintWriter(System.out);
@@ -102,52 +107,72 @@ public class Luke {
                 + "|____/ \\__,_|_|\\_\\___|\n";
         printLine();
         System.out.println("Hello I'm\n" + logo);
-        System.out.println("What can I do for you?");
+        printLine();
+        boolean foundList = true;
+        System.out.println("Checking for saved list...");
+        try {
+            readListFile(); // will build the list
+        } catch (FileNotFoundException e) {
+            System.out.println("No list found");
+            System.out.println("Creating new list...");
+            numItems = 0;
+            foundList = false;
+        } finally {
 
-        numItems = 0;
-        while (true) {
-            try {
-                String input = reader.readLine();
-                if (input == null || input.trim().isEmpty()) {
-                    throw new InvalidInputException();
-                }
-                String[] inputArr = input.split(" ");
-                String command = inputArr[0];
-                if (command.equals("bye")) exit();
-                else if (command.equals("mark")) markTask(Integer.parseInt(inputArr[1]) - 1, true);
-                else if (command.equals("unmark")) markTask(Integer.parseInt(inputArr[1]) - 1, false);
-                else if (command.equals("list")) printList();
-                else if (command.equals("delete")) deleteTask(Integer.parseInt(inputArr[1]) - 1);
-                else { // add tasks
-                    String type = command;
-                    if (type.equals("todo")) {
-                        handleToDo(input);
-                    } else if (type.equals("deadline")) {
-                        handleDeadline(input);
-                    } else if (type.equals("event")) {
-                        handleEvent(input);
-                    } else {
-                        throw new InvalidInputException();
-                    }
-                    addTaskUpdates();
-                }
-            } catch (InvalidInputException e) {
-                printLine();
-                System.out.println(" OOPS!!! I'm sorry, but I don't know what that means or the input is invalid.");
-                printLine();
-            } catch (NumberFormatException e) {
-                printLine();
-                System.out.println(" OOPS!!! Invalid number format. Please enter a valid index.");
-                printLine();
-            } catch (ArrayIndexOutOfBoundsException e) {
-                printLine();
-                System.out.println(" OOPS!!! Input is missing required arguments.");
-                printLine();
-            } catch (Exception e) {
-                printLine();
-                System.out.println(" OOPS!!! An unexpected error occurred: " + e.getMessage());
+            // print out existing list
+            if (foundList) {
+                System.out.println("Here is your current list:");
+                printList();
                 printLine();
             }
+
+            // main loop
+            while (true) {
+                try {
+                    String input = reader.readLine();
+                    if (input == null || input.trim().isEmpty()) {
+                        throw new InvalidInputException();
+                    }
+                    String[] inputArr = input.split(" ");
+                    String command = inputArr[0];
+                    if (command.equals("bye")) break;
+                    else if (command.equals("mark")) markTask(Integer.parseInt(inputArr[1]) - 1, true);
+                    else if (command.equals("unmark")) markTask(Integer.parseInt(inputArr[1]) - 1, false);
+                    else if (command.equals("list")) printList();
+                    else if (command.equals("delete")) deleteTask(Integer.parseInt(inputArr[1]) - 1);
+                    else { // add tasks
+                        String type = command;
+                        if (type.equals("todo")) {
+                            handleToDo(input);
+                        } else if (type.equals("deadline")) {
+                            handleDeadline(input);
+                        } else if (type.equals("event")) {
+                            handleEvent(input);
+                        } else {
+                            throw new InvalidInputException();
+                        }
+                        addTaskUpdates();
+                    }
+                } catch (InvalidInputException e) {
+                    printLine();
+                    System.out.println(" OOPS!!! I'm sorry, but I don't know what that means or the input is invalid.");
+                    printLine();
+                } catch (NumberFormatException e) {
+                    printLine();
+                    System.out.println(" OOPS!!! Invalid number format. Please enter a valid index.");
+                    printLine();
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    printLine();
+                    System.out.println(" OOPS!!! Input is missing required arguments.");
+                    printLine();
+                } catch (Exception e) {
+                    printLine();
+                    System.out.println(" OOPS!!! An unexpected error occurred: " + e.getMessage());
+                    printLine();
+                }
+            }
+            writeListToFile();
+            exit();
         }
     }
 
@@ -170,7 +195,7 @@ public class Luke {
             throw new InvalidInputException();
         }
         String name = input.substring(5);
-        list.add(new ToDo(name));
+        list.add(new ToDo(name, false));
     }
 
     public static void handleDeadline(String input) throws InvalidInputException {
@@ -186,8 +211,6 @@ public class Luke {
             System.out.println("invalid input: [deadline *** /by ] or [deadline /by ***]");
             throw new InvalidInputException();
         }
-        System.out.println(inputArr[0]);
-        System.out.println(inputArr[1]);
         String name = inputArr[0];
         String due = inputArr[1];
         // invalid input: white spaces for name and deadline
@@ -195,7 +218,7 @@ public class Luke {
             System.out.println("invalid input: empty task name or deadline");
             throw new InvalidInputException();
         }
-        list.add(new Deadline(name, due));
+        list.add(new Deadline(name, false, due));
     }
 
     public static void handleEvent(String input) throws InvalidInputException {
@@ -225,7 +248,7 @@ public class Luke {
         String start = inputArr[0];
         String end = inputArr[1];
         if (start.trim().isEmpty() || end.trim().isEmpty()) throw new InvalidInputException();
-        list.add(new Event(name, start, end));
+        list.add(new Event(name, false, start, end));
     }
 
     public static void addTaskUpdates() {
@@ -265,10 +288,94 @@ public class Luke {
         Task task = list.remove(i);
         printLine();
         System.out.println(" Noted. I've removed this task:");
-        System.out.println("    " + task);
+        System.out.println("   " + task);
         numItems--;
         System.out.println(" Now you have " + numItems + " tasks in the list.");
         printLine();
+    }
+
+    public static void readListFile() throws FileNotFoundException {
+        File file = new File(LIST_FILE_PATH);
+        Scanner scanner = new Scanner(file);
+        String header = scanner.nextLine();
+        int num = Integer.parseInt(header.substring(6));
+        while (scanner.hasNext()) {
+            String task = scanner.nextLine();
+            try {
+                readTask(task);
+            } catch (InvalidInputException e) {
+                printLine();
+                System.out.println(" There was something wrong with this task.");
+                System.out.println(" " + task);
+                printLine();
+            }
+            numItems++;
+        }
+    }
+
+    public static void readTask(String input) throws InvalidInputException {
+        String[] task = input.split(" : ");
+        String taskType = task[0];
+        if (taskType.equals("T")) {
+            if (task.length < 3) {
+//                System.out.println("len < 3");
+                throw new InvalidInputException();
+            }
+            boolean isDone = task[1].equals("1");
+            String name = task[2];
+            list.add(new ToDo(name, isDone));
+        } else if (taskType.equals("D")) {
+            if (task.length < 4) {
+                System.out.println("len < 4");
+                throw new InvalidInputException();
+            }
+            boolean isDone = task[1].equals("1");
+            String name = task[2];
+            String deadline = task[3];
+            list.add(new Deadline(name, isDone, deadline));
+        } else if (taskType.equals("E")) {
+            if (task.length < 5) {
+                System.out.println("len < 5");
+                throw new InvalidInputException();
+            }
+            boolean isDone = task[1].equals("1");
+            String name = task[2];
+            String start = task[3];
+            String end = task[4];
+            list.add(new Event(name, isDone, start, end));
+        } else {
+            throw new InvalidInputException();
+        };
+    }
+
+    public static void writeListToFile() throws IOException, FileNotFoundException {
+        try {
+            System.out.println("Searching for list file...");
+            new FileWriter(LIST_FILE_PATH, false).close(); // clear file
+        } catch (IOException e) {
+            System.out.println("Could not find file " + e.getMessage());
+            System.out.println("Creating new file...");
+        } finally {
+            System.out.println("Saving list...");
+            FileWriter writer = new FileWriter(LIST_FILE_PATH, true);
+            writer.write(String.format("list: %d\n", numItems));
+            for (Task task : list) {
+                if (task instanceof ToDo) {
+                    ToDo todo = (ToDo) task;
+                    writer.write(String.format("T : %s : %s", todo.isDone? "1" : "0", todo.name));
+                } else if (task instanceof Deadline) {
+                    Deadline deadline = (Deadline) task;
+                    writer.write(String.format("D : %s : %s : %s", deadline.isDone? "1" : "0", deadline.name, deadline.dueTime));
+                } else if (task instanceof Event) {
+                    Event event = (Event) task;
+                    writer.write(String.format("E : %s : %s : %s : %s", event.isDone? "1" : "0", event.name, event.startTime, event.endTime));
+                }
+                writer.write("\n");
+            }
+            writer.flush();
+            writer.close();
+            System.out.println("Saved successfully");
+        }
     }
 
 }

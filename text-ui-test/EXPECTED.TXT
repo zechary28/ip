@@ -6,7 +6,7 @@ Hello I'm
 | |___| |_| |   <  __/
 |____/ \__,_|_|\_\___|
 
-What can I do for you?
+Checking for saved list...
 ____________________________________________________________
  Got it. I've added this task:
    [T][ ] borrow book
