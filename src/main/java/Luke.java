@@ -61,7 +61,7 @@ public class Luke {
             // required format        : [YYYY:MM:DDTHH:MM:SS]
             String day = dueTime.substring(0, 2), month = dueTime.substring(3, 5), year = dueTime.substring(6, 10);
             String hour = dueTime.substring(11, 13), minute = dueTime.substring(14, 16);
-            String timeString = String.format("%s:%s:%sT%s:%s:00", year, month, day, hour, minute);
+            String timeString = String.format("%s-%s-%sT%s:%s:00", year, month, day, hour, minute);
             System.out.println(timeString);
             this.dueTime = LocalDateTime.parse(timeString); // assume string is in correct format
         }
@@ -88,12 +88,10 @@ public class Luke {
             // required format        : [YYYY:MM:DDTHH:MM:SS]
             String startDay = start.substring(0, 2), startMonth = start.substring(3, 5), startYear = start.substring(6, 10);
             String startHour = start.substring(11, 13), startMinute = start.substring(14, 16);
-            String startTimeString = String.format("%s:%s:%sT%s:%s:00", startYear, startMonth, startDay, startHour, startMinute);
-            System.out.println("start: " + startTimeString);
-            String endDay = start.substring(0, 2), endMonth = start.substring(3, 5), endYear = start.substring(6, 10);
-            String endHour = start.substring(11, 13), endMinute = start.substring(14, 16);
-            String endTimeString = String.format("%s:%s:%sT%s:%s:00", startYear, startMonth, startDay, startHour, startMinute);
-            System.out.println("end   : " + endTimeString);
+            String startTimeString = String.format("%s-%s-%sT%s:%s:00", startYear, startMonth, startDay, startHour, startMinute);
+            String endDay = end.substring(0, 2), endMonth = end.substring(3, 5), endYear = end.substring(6, 10);
+            String endHour = end.substring(11, 13), endMinute = end.substring(14, 16);
+            String endTimeString = String.format("%s-%s-%sT%s:%s:00", endYear, endMonth, endDay, endHour, endMinute);
             this.startTime = LocalDateTime.parse(startTimeString);
             this.endTime = LocalDateTime.parse(endTimeString);
         }
@@ -104,7 +102,9 @@ public class Luke {
 
         @Override
         public String toString() {
-            return String.format("[E][%s] %s (from: %s to: %s)", this.isDone?"X":" ", this.name, this.startTime, this.endTime);
+            return String.format("[E][%s] %s (from: %s to: %s)", this.isDone?"X":" ", this.name
+                    , this.startTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
+                    , this.endTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")));
         }
     }
 
@@ -317,6 +317,7 @@ public class Luke {
         File file = new File(LIST_FILE_PATH);
         Scanner scanner = new Scanner(file);
         String header = scanner.nextLine();
+        System.out.println(header);
         int num = Integer.parseInt(header.substring(6));
         while (scanner.hasNext()) {
             String task = scanner.nextLine();
@@ -337,7 +338,7 @@ public class Luke {
         String taskType = task[0];
         if (taskType.equals("T")) {
             if (task.length < 3) {
-//                System.out.println("len < 3");
+                System.out.println("len < 3");
                 throw new InvalidInputException();
             }
             boolean isDone = task[1].equals("1");
@@ -363,6 +364,7 @@ public class Luke {
             String end = task[4];
             list.add(new Event(name, isDone, start, end));
         } else {
+            System.out.println("invalid command");
             throw new InvalidInputException();
         };
     }
@@ -384,10 +386,13 @@ public class Luke {
                     writer.write(String.format("T : %s : %s", todo.isDone? "1" : "0", todo.name));
                 } else if (task instanceof Deadline) {
                     Deadline deadline = (Deadline) task;
-                    writer.write(String.format("D : %s : %s : %s", deadline.isDone? "1" : "0", deadline.name, deadline.dueTime));
+                    writer.write(String.format("D : %s : %s : %s", deadline.isDone? "1" : "0", deadline.name
+                            , deadline.dueTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
                 } else if (task instanceof Event) {
                     Event event = (Event) task;
-                    writer.write(String.format("E : %s : %s : %s : %s", event.isDone? "1" : "0", event.name, event.startTime, event.endTime));
+                    writer.write(String.format("E : %s : %s : %s : %s", event.isDone? "1" : "0", event.name
+                            , event.startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                            , event.endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
                 }
                 writer.write("\n");
             }
