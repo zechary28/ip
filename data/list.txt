@@ -1,1 +1,6 @@
-list: 0
+list: 5
+T : 1 : eat
+E : 0 : sleep : 3am : 5am
+D : 1 : shit : 9am
+T : 0 : eat more
+D : 0 : 2103 iP : today
