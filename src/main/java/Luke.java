@@ -10,13 +10,26 @@ import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+// prev working commit
+
 public class Luke {
 
     public static ArrayList<Task> list;
     public static int numItems;
     public static final String LIST_FILE_PATH = "../../../data/list.txt";
+    private TaskList tasklist;
 
-    // abstract class
+    private TaskList taskList;
+    private Ui ui;
+    private Storage storage;
+
+    public Luke() {
+        this.tasklist = new TaskList();
+        this.ui = new Ui();
+        this.storage = new Storage();
+    }
+
+    // abstract Task class
     public static abstract class Task {
         protected String name;
         protected boolean isDone;
@@ -110,6 +123,127 @@ public class Luke {
 
     // exceptions
     public static class InvalidInputException extends Exception {}
+
+    public abstract class Command {
+        public abstract void execute(TaskList tl, Ui ui, Storage st);
+    }
+    // list of commands
+
+
+    // Luke components
+    public class TaskList {
+        private ArrayList<Task> list;
+
+        public TaskList() {
+            this.list = new ArrayList<>();
+        }
+
+        public int getSize() {
+            return list.size();
+        }
+
+        public void addTask(Task task) {
+            this.list.add(task);
+        }
+
+        public void deleteTask(int i) {
+            Task task = this.list.remove(i);
+        }
+
+        public Task getTask(int i) {
+            return this.list.get(i);
+        }
+
+        public void markTask(int i, boolean isDone) {
+            this.list.get(i).setIsDone(isDone);
+        }
+
+        public ArrayList<Task> getList() {
+            return this.list;
+        }
+    }
+
+    public class Ui {
+        //io
+        BufferedReader reader;
+        PrintWriter writer;
+
+        private static final String LOGO = " _           _\n"
+                + "| |    _   _| | _____\n"
+                + "| |   | | | | |/ / _ \\\n"
+                + "| |___| |_| |   <  __/\n"
+                + "|____/ \\__,_|_|\\_\\___|\n";
+
+        public Ui() {
+            reader = new BufferedReader(new InputStreamReader(System.in));
+            writer = new PrintWriter(System.out);
+        }
+
+        // showing to System.out
+        public void showLine() {
+            System.out.println("____________________________________________________________");
+        }
+
+        public void showWelcome() {
+            showLine();
+            System.out.println("Hello I'm\n" + LOGO);
+            showLine();
+        }
+
+        public void exit() {
+            showLine();
+            System.out.println(" Bye. Hope to see you again soon!");
+            showLine();
+            System.exit(0);
+        }
+
+        // reading from input
+        public String readCommand() throws IOException {
+            return reader.readLine();
+        }
+    }
+
+    public class Storage {
+        private final String READ_FILE_PATH = "../../../data/list.txt";
+        private final String WRITE_FILE_PATH = "../../../data/list.txt";
+        Scanner scanner;
+
+        public Storage() {
+            Scanner scanner = new Scanner(READ_FILE_PATH);
+        }
+
+        public String readLine() {
+            return scanner.nextLine();
+        }
+
+        private void writeLine(String filePath, String textToAdd) throws IOException {
+            FileWriter writer = new FileWriter(filePath);
+            writer.write(textToAdd);
+            writer.close();
+        }
+
+        public boolean hasReadFile() {
+            try {
+                new FileWriter(READ_FILE_PATH, true).close();
+            } catch (IOException e) {
+                return false;
+            }
+            return true;
+        }
+
+        public boolean hasWriteFile() {
+            try {
+                new FileWriter(WRITE_FILE_PATH, true).close();
+            } catch (IOException e) {
+                return false;
+            }
+            return true;
+        }
+
+        public void clearFile() throws IOException {
+            new FileWriter(WRITE_FILE_PATH, false).close();
+        }
+    }
 
     public static void main(String[] args) throws IOException, InvalidInputException, NumberFormatException, FileNotFoundException {
         //io
