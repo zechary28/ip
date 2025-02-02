@@ -26,7 +26,12 @@ public class Luke {
     public Luke() {
         this.tasklist = new TaskList();
         this.ui = new Ui();
-        this.storage = new Storage();
+        try {
+            this.storage = new Storage();
+        } catch (Exception e) {
+            System.out.println("No file for storage found, exiting program");
+            System.exit(0);
+        }
     }
 
     // abstract Task class
@@ -75,7 +80,6 @@ public class Luke {
             String day = dueTime.substring(0, 2), month = dueTime.substring(3, 5), year = dueTime.substring(6, 10);
             String hour = dueTime.substring(11, 13), minute = dueTime.substring(14, 16);
             String timeString = String.format("%s-%s-%sT%s:%s:00", year, month, day, hour, minute);
-            System.out.println(timeString);
             this.dueTime = LocalDateTime.parse(timeString); // assume string is in correct format
         }
 
@@ -214,16 +218,16 @@ public class Luke {
         private final String WRITE_FILE_PATH = "../../../data/list.txt";
         Scanner scanner;
 
-        public Storage() {
-            Scanner scanner = new Scanner(READ_FILE_PATH);
+        public Storage() throws FileNotFoundException {
+            this.scanner = new Scanner(new File(READ_FILE_PATH));
         }
 
         public String readLine() {
-            return scanner.nextLine();
+            return this.scanner.nextLine();
         }
 
         public void writeLine(String textToAdd) throws IOException {
-            FileWriter writer = new FileWriter(WRITE_FILE_PATH);
+            FileWriter writer = new FileWriter(WRITE_FILE_PATH, true);
             writer.write(textToAdd + "\n");
             writer.close();
         }
@@ -422,7 +426,6 @@ public class Luke {
             foundList = false;
         } finally {
             if (foundList) {
-                System.out.println("Here is your current list:");
                 printList();
                 this.ui.showLine();
             }
@@ -430,18 +433,16 @@ public class Luke {
     }
 
     public void readListFile() throws FileNotFoundException {
-        if (this.storage.hasReadFile()) {
-            String header = this.storage.readLine();
-            while (this.storage.hasNext()) {
-                String task = this.storage.readLine();
-                try {
-                    readTask(task);
-                } catch (InvalidInputException e) {
-                    this.ui.showLine();
-                    System.out.println(" There was something wrong with this task.");
-                    System.out.println(" " + task);
-                    this.ui.showLine();
-                }
+        String header = this.storage.readLine();
+        while (this.storage.hasNext()) {
+            String task = this.storage.readLine();
+            try {
+                this.tasklist.addTask(readTask(task));
+            } catch (InvalidInputException e) {
+                this.ui.showLine();
+                System.out.println(" There was something wrong with this task.");
+                System.out.println(" " + task);
+                this.ui.showLine();
             }
         }
     }
@@ -485,6 +486,7 @@ public class Luke {
     public void writeListToFile() throws IOException {
         this.storage.clearFile();
         System.out.println("Saving list...");
+        storage.writeLine(String.format("list: %d", this.tasklist.getSize()));
         for (Task task : tasklist.getList()) {
             if (task instanceof ToDo) {
                 ToDo todo = (ToDo) task;
@@ -500,7 +502,6 @@ public class Luke {
                         , event.endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
             }
         }
-        storage.writeLine(String.format("list: %d", this.tasklist.getSize()));
         System.out.println("Saved successfully");
     }
 }
