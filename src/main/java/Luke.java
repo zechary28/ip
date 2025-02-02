@@ -254,104 +254,57 @@ public class Luke {
     }
 
     public static void main(String[] args) throws IOException, InvalidInputException, NumberFormatException, FileNotFoundException {
-        //io
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-        PrintWriter writer = new PrintWriter(System.out);
-
-        //data structures
-
-        String logo = " _           _\n"
-                + "| |    _   _| | _____\n"
-                + "| |   | | | | |/ / _ \\\n"
-                + "| |___| |_| |   <  __/\n"
-                + "|____/ \\__,_|_|\\_\\___|\n";
-        printLine();
-        System.out.println("Hello I'm\n" + logo);
-        printLine();
-        boolean foundList = true;
-        System.out.println("Checking for saved list...");
-        try {
-            readListFile(); // will build the list
-        } catch (FileNotFoundException e) {
-            System.out.println("No list found");
-            System.out.println("Creating new list...");
-            numItems = 0;
-            foundList = false;
-        } finally {
-
-            // print out existing list
-            if (foundList) {
-                System.out.println("Here is your current list:");
-                printList();
-                printLine();
-            }
-
-            // main loop
-            while (true) {
-                try {
-                    String input = reader.readLine();
-                    if (input == null || input.trim().isEmpty()) {
-                        throw new InvalidInputException();
-                    }
-                    String[] inputArr = input.split(" ");
-                    String command = inputArr[0];
-                    if (command.equals("bye")) break;
-                    else if (command.equals("mark")) markTask(Integer.parseInt(inputArr[1]) - 1, true);
-                    else if (command.equals("unmark")) markTask(Integer.parseInt(inputArr[1]) - 1, false);
-                    else if (command.equals("list")) printList();
-                    else if (command.equals("delete")) deleteTask(Integer.parseInt(inputArr[1]) - 1);
-                    else { // add tasks
-                        String type = command;
-                        if (type.equals("todo")) {
-//                            handleToDo(input);
-                        } else if (type.equals("deadline")) {
-//                            handleDeadline(input);
-                        } else if (type.equals("event")) {
-//                            handleEvent(input);
-                        } else {
-                            throw new InvalidInputException();
-                        }
-                        addTaskUpdates();
-                    }
-                } catch (InvalidInputException e) {
-                    printLine();
-                    System.out.println(" OOPS!!! I'm sorry, but I don't know what that means or the input is invalid.");
-                    printLine();
-                } catch (NumberFormatException e) {
-                    printLine();
-                    System.out.println(" OOPS!!! Invalid number format. Please enter a valid index.");
-                    printLine();
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    printLine();
-                    System.out.println(" OOPS!!! Input is missing required arguments.");
-                    printLine();
-                } catch (Exception e) {
-                    printLine();
-                    System.out.println(" OOPS!!! An unexpected error occurred: " + e.getMessage());
-                    printLine();
-                }
-            }
-            writeListToFile();
-            exit();
-        }
+        new Luke().run();
     }
 
     public void run() {
         this.ui.showWelcome();
-        boolean isExit = false;
-        while (!isExit) {
+        checkListFile();
+        while (true) {
             try {
-                String fullCommand = ui.readCommand();
-                ui.showLine(); // show the divider line ("_______")
-//                Lukebackup.Command c = Parser.parse(fullCommand);
-//                c.execute(tasks, ui, storage);
-//                isExit = c.isExit();
+                String input = ui.readCommand();
+                if (input == null || input.trim().isEmpty()) {
+                    System.out.println("No input detected");
+                    throw new InvalidInputException();
+                }
+                // determine command
+                String[] inputArr = input.split(" ");
+                String command = inputArr[0];
+                if (command.equals("bye")) break;
+                else if (command.equals("mark")) markTask(Integer.parseInt(inputArr[1]) - 1, true);
+                else if (command.equals("unmark")) markTask(Integer.parseInt(inputArr[1]) - 1, false);
+                else if (command.equals("list")) printList();
+                else if (command.equals("delete")) deleteTask(Integer.parseInt(inputArr[1]) - 1);
+                else { // add tasks
+                    String type = command;
+                    if (type.equals("todo")) {
+                        Task task = parseToDo(input);
+                        this.tasklist.addTask(task);
+                        addTaskUpdates(task);
+                    } else if (type.equals("deadline")) {
+                        Task task = parseDeadline(input);
+                        this.tasklist.addTask(task);
+                        addTaskUpdates(task);
+                    } else if (type.equals("event")) {
+                        Task task = parseEvent(input);
+                        this.tasklist.addTask(task);
+                        addTaskUpdates(task);
+                    } else {
+                        throw new InvalidInputException();
+                    }
+                }
             } catch (Exception e) {
                 ui.showError(e.getMessage());
             } finally {
                 ui.showLine();
             }
         }
+        try {
+            writeListToFile();
+        } catch (Exception e) {
+
+        }
+        this.ui.exit();
     }
 
     // parsers
@@ -456,6 +409,24 @@ public class Luke {
         System.out.println("   " + task);
         System.out.println(" Now you have " + this.tasklist.getSize() + " tasks in the list.");
         this.ui.showLine();
+    }
+
+    public void checkListFile() {
+        boolean foundList = true;
+        try {
+            readListFile();
+        } catch (FileNotFoundException e) {
+            System.out.println("No list found");
+            System.out.println("Creating new list...");
+            numItems = 0;
+            foundList = false;
+        } finally {
+            if (foundList) {
+                System.out.println("Here is your current list:");
+                printList();
+                this.ui.showLine();
+            }
+        }
     }
 
     public void readListFile() throws FileNotFoundException {
