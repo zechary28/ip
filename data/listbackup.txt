@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 // prev working commit
 
-public class Luke {
+public class duke.ui.Luke {
 
     public static ArrayList<Task> list;
     public static int numItems;
@@ -431,13 +431,13 @@ import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class Luke {
+public class duke.ui.Luke {
 
     private TaskList tasklist;
     private Ui ui;
     private Storage storage;
 
-    public Luke() {
+    public duke.ui.Luke() {
         this.tasklist = new TaskList();
         this.ui = new Ui();
     }
@@ -849,7 +849,7 @@ public class Luke {
 
     public static void main(String[] args) throws IOException, InvalidInputException, NumberFormatException, FileNotFoundException {
 
-        new Luke().run();
+        new duke.ui.Luke().run();
 
         public static void handleToDo(String input) throws InvalidInputException {
             // invalid input: [todo] or [todo ]

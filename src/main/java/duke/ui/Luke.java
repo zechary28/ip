@@ -1,25 +1,15 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
-import java.io.FileWriter;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+package duke.ui;
 
-// prev working commit
+import duke.task.*;
+import duke.component.*;
+import duke.exception.*;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.time.format.DateTimeFormatter;
 
 public class Luke {
 
-    public static ArrayList<Task> list;
-    public static int numItems;
-    public static final String LIST_FILE_PATH = "../../../data/list.txt";
     private TaskList tasklist;
-
-    private TaskList taskList;
     private Ui ui;
     private Storage storage;
 
@@ -31,229 +21,6 @@ public class Luke {
         } catch (Exception e) {
             System.out.println("No file for storage found, exiting program");
             System.exit(0);
-        }
-    }
-
-    // abstract Task class
-    public static abstract class Task {
-        protected String name;
-        protected boolean isDone;
-
-        public Task(String name, boolean isDone) {
-            this.name = name;
-            this.isDone = isDone;
-        }
-
-        public abstract void setIsDone(boolean isDone);
-
-        @Override
-        public abstract String toString();
-    }
-
-    // Task subtypes
-    public static class ToDo extends Task {
-
-        protected String dueDate;
-
-        public ToDo(String name, boolean isDone) {
-            super(name, isDone);
-        }
-
-        public void setIsDone(boolean isDone) {
-            this.isDone = isDone;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("[T][%s] %s", this.isDone?"X":" ", this.name);
-        }
-    }
-
-    public static class Deadline extends Task {
-
-        protected LocalDateTime dueTime;
-
-        public Deadline(String name, boolean isDone, String dueTime) {
-            super(name, isDone);
-            // input format of dueTime: [DD/MM/YYYY HH:MM]
-            // required format        : [YYYY:MM:DDTHH:MM:SS]
-            String day = dueTime.substring(0, 2), month = dueTime.substring(3, 5), year = dueTime.substring(6, 10);
-            String hour = dueTime.substring(11, 13), minute = dueTime.substring(14, 16);
-            String timeString = String.format("%s-%s-%sT%s:%s:00", year, month, day, hour, minute);
-            this.dueTime = LocalDateTime.parse(timeString); // assume string is in correct format
-        }
-
-        public void setIsDone(boolean isDone) {
-            this.isDone = isDone;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("[D][%s] %s (by: %s)", this.isDone?"X":" "
-                    , this.name, this.dueTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")));
-        }
-    }
-
-    public static class Event extends Task {
-
-        protected LocalDateTime startTime;
-        protected LocalDateTime endTime;
-
-        public Event(String name, boolean isDone, String start, String end) {
-            super(name, isDone);
-            // input format of dueTime: [DD/MM/YYYY HH:MM]
-            // required format        : [YYYY:MM:DDTHH:MM:SS]
-            String startDay = start.substring(0, 2), startMonth = start.substring(3, 5), startYear = start.substring(6, 10);
-            String startHour = start.substring(11, 13), startMinute = start.substring(14, 16);
-            String startTimeString = String.format("%s-%s-%sT%s:%s:00", startYear, startMonth, startDay, startHour, startMinute);
-            String endDay = end.substring(0, 2), endMonth = end.substring(3, 5), endYear = end.substring(6, 10);
-            String endHour = end.substring(11, 13), endMinute = end.substring(14, 16);
-            String endTimeString = String.format("%s-%s-%sT%s:%s:00", endYear, endMonth, endDay, endHour, endMinute);
-            this.startTime = LocalDateTime.parse(startTimeString);
-            this.endTime = LocalDateTime.parse(endTimeString);
-        }
-
-        public void setIsDone(boolean isDone) {
-            this.isDone = isDone;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("[E][%s] %s (from: %s to: %s)", this.isDone?"X":" ", this.name
-                    , this.startTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))
-                    , this.endTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")));
-        }
-    }
-
-    // exceptions
-    public static class InvalidInputException extends Exception {}
-
-    public abstract class Command {
-        public abstract void execute(TaskList tl, Ui ui, Storage st);
-    }
-    // list of commands
-
-
-    // Luke components
-    public class TaskList {
-        private ArrayList<Task> list;
-
-        public TaskList() {
-            this.list = new ArrayList<>();
-        }
-
-        public int getSize() {
-            return list.size();
-        }
-
-        public void addTask(Task task) {
-            this.list.add(task);
-        }
-
-        public Task deleteTask(int i) {
-            return this.list.remove(i);
-        }
-
-        public Task getTask(int i) {
-            return this.list.get(i);
-        }
-
-        public void markTask(int i, boolean isDone) {
-            this.list.get(i).setIsDone(isDone);
-        }
-
-        public ArrayList<Task> getList() {
-            return this.list;
-        }
-    }
-
-    public class Ui {
-        //io
-        BufferedReader reader;
-        PrintWriter writer;
-
-        private static final String LOGO = " _           _\n"
-                + "| |    _   _| | _____\n"
-                + "| |   | | | | |/ / _ \\\n"
-                + "| |___| |_| |   <  __/\n"
-                + "|____/ \\__,_|_|\\_\\___|\n";
-
-        public Ui() {
-            reader = new BufferedReader(new InputStreamReader(System.in));
-            writer = new PrintWriter(System.out);
-        }
-
-        // showing to System.out
-        public void showLine() {
-            System.out.println("____________________________________________________________");
-        }
-
-        public void showWelcome() {
-            showLine();
-            System.out.println("Hello I'm\n" + LOGO);
-            showLine();
-        }
-
-        public void showError(String message) {
-            showLine();
-            System.out.println("There was an error: " + message);
-            showLine();
-        }
-
-        public void exit() {
-            showLine();
-            System.out.println(" Bye. Hope to see you again soon!");
-            showLine();
-            System.exit(0);
-        }
-
-        // reading from input
-        public String readCommand() throws IOException {
-            return reader.readLine();
-        }
-    }
-
-    public class Storage {
-        private final String READ_FILE_PATH = "../../../data/list.txt";
-        private final String WRITE_FILE_PATH = "../../../data/list.txt";
-        Scanner scanner;
-
-        public Storage() throws FileNotFoundException {
-            this.scanner = new Scanner(new File(READ_FILE_PATH));
-        }
-
-        public String readLine() {
-            return this.scanner.nextLine();
-        }
-
-        public void writeLine(String textToAdd) throws IOException {
-            FileWriter writer = new FileWriter(WRITE_FILE_PATH, true);
-            writer.write(textToAdd + "\n");
-            writer.close();
-        }
-
-        public boolean hasNext() { return scanner.hasNext(); }
-
-        public boolean hasReadFile() {
-            try {
-                new FileWriter(READ_FILE_PATH, true).close();
-            } catch (IOException e) {
-                return false;
-            }
-            return true;
-        }
-
-        public boolean hasWriteFile() {
-            try {
-                new FileWriter(WRITE_FILE_PATH, true).close();
-            } catch (IOException e) {
-                return false;
-            }
-            return true;
-        }
-
-        public void clearFile() throws IOException {
-            new FileWriter(WRITE_FILE_PATH, false).close();
         }
     }
 
@@ -422,7 +189,6 @@ public class Luke {
         } catch (FileNotFoundException e) {
             System.out.println("No list found");
             System.out.println("Creating new list...");
-            numItems = 0;
             foundList = false;
         } finally {
             if (foundList) {
@@ -490,16 +256,16 @@ public class Luke {
         for (Task task : tasklist.getList()) {
             if (task instanceof ToDo) {
                 ToDo todo = (ToDo) task;
-                this.storage.writeLine(String.format("T : %s : %s", todo.isDone? "1" : "0", todo.name));
+                this.storage.writeLine(String.format("T : %s : %s", todo.getIsDone()? "1" : "0", todo.getName()));
             } else if (task instanceof Deadline) {
                 Deadline deadline = (Deadline) task;
-                this.storage.writeLine(String.format("D : %s : %s : %s", deadline.isDone? "1" : "0", deadline.name
-                        , deadline.dueTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+                this.storage.writeLine(String.format("D : %s : %s : %s", deadline.getIsDone()? "1" : "0", deadline.getName()
+                        , deadline.getDueTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
             } else if (task instanceof Event) {
                 Event event = (Event) task;
-                this.storage.writeLine(String.format("E : %s : %s : %s : %s", event.isDone? "1" : "0", event.name
-                        , event.startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-                        , event.endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+                this.storage.writeLine(String.format("E : %s : %s : %s : %s", event.getIsDone()? "1" : "0", event.getName()
+                        , event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                        , event.getEndTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
             }
         }
         System.out.println("Saved successfully");
