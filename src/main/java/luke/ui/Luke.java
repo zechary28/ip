@@ -1,8 +1,8 @@
-package duke.ui;
+package luke.ui;
 
-import duke.task.*;
-import duke.component.*;
-import duke.exception.*;
+import luke.task.*;
+import luke.component.*;
+import luke.exception.*;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.time.format.DateTimeFormatter;

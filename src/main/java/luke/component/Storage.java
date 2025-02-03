@@ -1,4 +1,4 @@
-package duke.component;
+package luke.component;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.util.Scanner;
 
 public class Storage {
-    private final String READ_FILE_PATH = "../../../data/list.txt";
-    private final String WRITE_FILE_PATH = "../../../data/list.txt";
+    private final String READ_FILE_PATH = "data/list.txt";
+    private final String WRITE_FILE_PATH = "data/list.txt";
     Scanner scanner;
 
     public Storage() throws FileNotFoundException {

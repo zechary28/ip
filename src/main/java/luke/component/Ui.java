@@ -1,4 +1,4 @@
-package duke.component;
+package luke.component;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -1,6 +1,6 @@
-package duke.component;
+package luke.component;
 
-import duke.task.Task;
+import luke.task.Task;
 
 import java.util.ArrayList;
 

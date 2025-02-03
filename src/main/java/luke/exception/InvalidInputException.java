@@ -1,6 +1,4 @@
-package duke.exception;
-
-import duke.ui.Luke;
+package luke.exception;
 
 // exceptions
 public class InvalidInputException extends Exception {}
