@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 // prev working commit
 
-public class duke.ui.Luke {
+public class duke.uiTest.Luke {
 
     public static ArrayList<Task> list;
     public static int numItems;
@@ -165,9 +165,9 @@ public class duke.ui.Luke {
                         String type = command;
                         if (type.equals("todo")) {
                             handleToDo(input);
-                        } else if (type.equals("deadline")) {
+                        } else if (type.equals("deadlineTest")) {
                             handleDeadline(input);
-                        } else if (type.equals("event")) {
+                        } else if (type.equals("eventTest")) {
                             handleEvent(input);
                         } else {
                             throw new InvalidInputException();
@@ -220,40 +220,40 @@ public class duke.ui.Luke {
     }
 
     public static void handleDeadline(String input) throws InvalidInputException {
-        // invalid input: [deadline] or [deadline ]
+        // invalid input: [deadlineTest] or [deadlineTest ]
         if (input.length() < 9 || input.substring(9).trim().isEmpty()) {
-            System.out.println("invalid input: [deadline] or [deadline ]");
+            System.out.println("invalid input: [deadlineTest] or [deadlineTest ]");
             throw new InvalidInputException();
         }
         String[] inputArr = input.substring(9).split(" /by ");
-        // invalid input: [deadline *** /by ] or [deadline /by ***]
+        // invalid input: [deadlineTest *** /by ] or [deadlineTest /by ***]
         if (inputArr.length < 2) {
             System.out.println(inputArr[0]);
-            System.out.println("invalid input: [deadline *** /by ] or [deadline /by ***]");
+            System.out.println("invalid input: [deadlineTest *** /by ] or [deadlineTest /by ***]");
             throw new InvalidInputException();
         }
         String name = inputArr[0];
         String due = inputArr[1];
-        // invalid input: white spaces for name and deadline
+        // invalid input: white spaces for name and deadlineTest
         if (name.trim().isEmpty() || due.trim().isEmpty()) {
-            System.out.println("invalid input: empty task name or deadline");
+            System.out.println("invalid input: empty taskTest name or deadlineTest");
             throw new InvalidInputException();
         }
         list.add(new Deadline(name, false, due));
     }
 
     public static void handleEvent(String input) throws InvalidInputException {
-        // invalid input: [event] or [event ]
+        // invalid input: [eventTest] or [eventTest ]
         if (input.length() < 6 || input.substring(6).trim().isEmpty()) {
-            System.out.println("invalid input: [event] or [event ]");
+            System.out.println("invalid input: [eventTest] or [eventTest ]");
             throw new InvalidInputException();
         }
 
         // split [name] /from [rest...]
         String[] inputArr = input.substring(6).split(" /from ");
-        // invalid input: [event *** /from ] or [event /from ***]
+        // invalid input: [eventTest *** /from ] or [eventTest /from ***]
         if (inputArr.length < 2) {
-            System.out.println("invalid input: [event *** /from ] or [event /from ***]");
+            System.out.println("invalid input: [eventTest *** /from ] or [eventTest /from ***]");
             throw new InvalidInputException();
         }
         input = inputArr[1];
@@ -261,9 +261,9 @@ public class duke.ui.Luke {
 
         // split [start] /by [end]
         inputArr = input.split(" /to ");
-        // invalid input: [event *** /from *** /to ] or [event *** /from /to ***]
+        // invalid input: [eventTest *** /from *** /to ] or [eventTest *** /from /to ***]
         if (inputArr.length < 2) {
-            System.out.println("invalid input: [event *** /from *** /to ] or [event *** /from /to ***]");
+            System.out.println("invalid input: [eventTest *** /from *** /to ] or [eventTest *** /from /to ***]");
             throw new InvalidInputException();
         }
         String start = inputArr[0];
@@ -274,7 +274,7 @@ public class duke.ui.Luke {
 
     public static void addTaskUpdates() {
         printLine();
-        System.out.println(" Got it. I've added this task:");
+        System.out.println(" Got it. I've added this taskTest:");
         System.out.println("   " + list.get(numItems));
         numItems++;
         System.out.println(" Now you have " + numItems + " tasks in the list.");
@@ -291,25 +291,25 @@ public class duke.ui.Luke {
     }
 
     public static void markTask(int i, boolean isDone) {
-        Task task = list.get(i);
-        task.setIsDone(isDone);
+        Task taskTest = list.get(i);
+        taskTest.setIsDone(isDone);
         printLine();
         if (isDone) {
-            System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + task.toString());
+            System.out.println(" Nice! I've marked this taskTest as done:");
+            System.out.println("   " + taskTest.toString());
             printLine();
         } else {
-            System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + task.toString());
+            System.out.println(" OK, I've marked this taskTest as not done yet:");
+            System.out.println("   " + taskTest.toString());
             printLine();
         }
     }
 
     public static void deleteTask(int i) {
-        Task task = list.remove(i);
+        Task taskTest = list.remove(i);
         printLine();
-        System.out.println(" Noted. I've removed this task:");
-        System.out.println("   " + task);
+        System.out.println(" Noted. I've removed this taskTest:");
+        System.out.println("   " + taskTest);
         numItems--;
         System.out.println(" Now you have " + numItems + " tasks in the list.");
         printLine();
@@ -322,13 +322,13 @@ public class duke.ui.Luke {
         System.out.println(header);
         int num = Integer.parseInt(header.substring(6));
         while (scanner.hasNext()) {
-            String task = scanner.nextLine();
+            String taskTest = scanner.nextLine();
             try {
-                readTask(task);
+                readTask(taskTest);
             } catch (InvalidInputException e) {
                 printLine();
-                System.out.println(" There was something wrong with this task.");
-                System.out.println(" " + task);
+                System.out.println(" There was something wrong with this taskTest.");
+                System.out.println(" " + taskTest);
                 printLine();
             }
             numItems++;
@@ -336,34 +336,34 @@ public class duke.ui.Luke {
     }
 
     public static void readTask(String input) throws InvalidInputException {
-        String[] task = input.split(" : ");
-        String taskType = task[0];
+        String[] taskTest = input.split(" : ");
+        String taskType = taskTest[0];
         if (taskType.equals("T")) {
-            if (task.length < 3) {
+            if (taskTest.length < 3) {
                 System.out.println("len < 3");
                 throw new InvalidInputException();
             }
-            boolean isDone = task[1].equals("1");
-            String name = task[2];
+            boolean isDone = taskTest[1].equals("1");
+            String name = taskTest[2];
             list.add(new ToDo(name, isDone));
         } else if (taskType.equals("D")) {
-            if (task.length < 4) {
+            if (taskTest.length < 4) {
                 System.out.println("len < 4");
                 throw new InvalidInputException();
             }
-            boolean isDone = task[1].equals("1");
-            String name = task[2];
-            String deadline = task[3];
-            list.add(new Deadline(name, isDone, deadline));
+            boolean isDone = taskTest[1].equals("1");
+            String name = taskTest[2];
+            String deadlineTest = taskTest[3];
+            list.add(new Deadline(name, isDone, deadlineTest));
         } else if (taskType.equals("E")) {
-            if (task.length < 5) {
+            if (taskTest.length < 5) {
                 System.out.println("len < 5");
                 throw new InvalidInputException();
             }
-            boolean isDone = task[1].equals("1");
-            String name = task[2];
-            String start = task[3];
-            String end = task[4];
+            boolean isDone = taskTest[1].equals("1");
+            String name = taskTest[2];
+            String start = taskTest[3];
+            String end = taskTest[4];
             list.add(new Event(name, isDone, start, end));
         } else {
             System.out.println("invalid command");
@@ -382,19 +382,19 @@ public class duke.ui.Luke {
             System.out.println("Saving list...");
             FileWriter writer = new FileWriter(LIST_FILE_PATH, true);
             writer.write(String.format("list: %d\n", numItems));
-            for (Task task : list) {
-                if (task instanceof ToDo) {
-                    ToDo todo = (ToDo) task;
+            for (Task taskTest : list) {
+                if (taskTest instanceof ToDo) {
+                    ToDo todo = (ToDo) taskTest;
                     writer.write(String.format("T : %s : %s", todo.isDone? "1" : "0", todo.name));
-                } else if (task instanceof Deadline) {
-                    Deadline deadline = (Deadline) task;
-                    writer.write(String.format("D : %s : %s : %s", deadline.isDone? "1" : "0", deadline.name
-                            , deadline.dueTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
-                } else if (task instanceof Event) {
-                    Event event = (Event) task;
-                    writer.write(String.format("E : %s : %s : %s : %s", event.isDone? "1" : "0", event.name
-                            , event.startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-                            , event.endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+                } else if (taskTest instanceof Deadline) {
+                    Deadline deadlineTest = (Deadline) taskTest;
+                    writer.write(String.format("D : %s : %s : %s", deadlineTest.isDone? "1" : "0", deadlineTest.name
+                            , deadlineTest.dueTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+                } else if (taskTest instanceof Event) {
+                    Event eventTest = (Event) taskTest;
+                    writer.write(String.format("E : %s : %s : %s : %s", eventTest.isDone? "1" : "0", eventTest.name
+                            , eventTest.startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                            , eventTest.endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
                 }
                 writer.write("\n");
             }
@@ -431,15 +431,15 @@ import java.io.FileWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class duke.ui.Luke {
+public class duke.uiTest.Luke {
 
     private TaskList tasklist;
-    private Ui ui;
+    private Ui uiTest;
     private Storage storage;
 
-    public duke.ui.Luke() {
+    public duke.uiTest.Luke() {
         this.tasklist = new TaskList();
-        this.ui = new Ui();
+        this.uiTest = new Ui();
     }
 
     // abstract class
@@ -535,14 +535,14 @@ public class duke.ui.Luke {
     }
 
     public abstract class Command {
-        public abstract void execute(TaskList tl, Ui ui, Storage st);
+        public abstract void execute(TaskList tl, Ui uiTest, Storage st);
     }
 
     public class WriteListToFileCommand extends Command {
         public WriteListToFileCommand() {
 
         }
-        public void execute(TaskList tl, Ui ui, Storage st) {
+        public void execute(TaskList tl, Ui uiTest, Storage st) {
             try {
                 System.out.println("Searching for list file...");
                 new FileWriter(this.WRITE_FILE_PATH, false).close(); // clear file
@@ -553,19 +553,19 @@ public class duke.ui.Luke {
                 System.out.println("Saving list...");
                 FileWriter writer = new FileWriter(LIST_FILE_PATH, true);
                 writer.write(String.format("list: %d\n", tasklist.getSize()));
-                for (Task task : list) {
-                    if (task instanceof ToDo) {
-                        ToDo todo = (ToDo) task;
+                for (Task taskTest : list) {
+                    if (taskTest instanceof ToDo) {
+                        ToDo todo = (ToDo) taskTest;
                         writer.write(String.format("T : %s : %s", todo.isDone? "1" : "0", todo.name));
-                    } else if (task instanceof Deadline) {
-                        Deadline deadline = (Deadline) task;
-                        writer.write(String.format("D : %s : %s : %s", deadline.isDone? "1" : "0", deadline.name
-                                , deadline.dueTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
-                    } else if (task instanceof Event) {
-                        Event event = (Event) task;
-                        writer.write(String.format("E : %s : %s : %s : %s", event.isDone? "1" : "0", event.name
-                                , event.startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-                                , event.endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+                    } else if (taskTest instanceof Deadline) {
+                        Deadline deadlineTest = (Deadline) taskTest;
+                        writer.write(String.format("D : %s : %s : %s", deadlineTest.isDone? "1" : "0", deadlineTest.name
+                                , deadlineTest.dueTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+                    } else if (taskTest instanceof Event) {
+                        Event eventTest = (Event) taskTest;
+                        writer.write(String.format("E : %s : %s : %s : %s", eventTest.isDone? "1" : "0", eventTest.name
+                                , eventTest.startTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                                , eventTest.endTime.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
                     }
                     writer.write("\n");
                 }
@@ -587,15 +587,15 @@ public class duke.ui.Luke {
             return list.size();
         }
 
-        public void addTask(Task task) {
-            this.list.add(task);
+        public void addTask(Task taskTest) {
+            this.list.add(taskTest);
         }
 
         public void deleteTask(int i) {
-            Task task = this.list.remove(i);
+            Task taskTest = this.list.remove(i);
             printLine();
-            System.out.println(" Noted. I've removed this task:");
-            System.out.println("   " + task);
+            System.out.println(" Noted. I've removed this taskTest:");
+            System.out.println("   " + taskTest);
             System.out.println(" Now you have " + list.size() + " tasks in the list.");
             printLine();
         }
@@ -605,16 +605,16 @@ public class duke.ui.Luke {
         }
 
         public void markTask(int i, boolean isDone) {
-            Task task = this.list.get(i);
-            task.setIsDone(isDone);
+            Task taskTest = this.list.get(i);
+            taskTest.setIsDone(isDone);
             printLine();
             if (isDone) {
-                System.out.println(" Nice! I've marked this task as done:");
-                System.out.println("   " + task.toString());
+                System.out.println(" Nice! I've marked this taskTest as done:");
+                System.out.println("   " + taskTest.toString());
                 printLine();
             } else {
-                System.out.println(" OK, I've marked this task as not done yet:");
-                System.out.println("   " + task.toString());
+                System.out.println(" OK, I've marked this taskTest as not done yet:");
+                System.out.println("   " + taskTest.toString());
                 printLine();
             }
         }
@@ -656,10 +656,10 @@ public class duke.ui.Luke {
             showLine();
         }
 
-        public void showTaskUpdates(Task task, int num) {
+        public void showTaskUpdates(Task taskTest, int num) {
             this.showLine();
-            System.out.println(" Got it. I've added this task:");
-            System.out.println("   " + task);
+            System.out.println(" Got it. I've added this taskTest:");
+            System.out.println("   " + taskTest);
             System.out.println(" Now you have " + num + " tasks in the list.");
             this.showLine();
         }
@@ -700,45 +700,45 @@ public class duke.ui.Luke {
             System.out.println(header);
             int num = Integer.parseInt(header.substring(6));
             while (scanner.hasNext()) {
-                String task = scanner.nextLine();
+                String taskTest = scanner.nextLine();
                 try {
-                    readTask(task);
+                    readTask(taskTest);
                 } catch (InvalidInputException e) {
-                    System.out.println(" There was something wrong with this task.");
-                    System.out.println(" " + task);
+                    System.out.println(" There was something wrong with this taskTest.");
+                    System.out.println(" " + taskTest);
                 }
             }
         }
 
         public static Task readTask(String input) throws InvalidInputException {
-            String[] task = input.split(" : ");
-            String taskType = task[0];
+            String[] taskTest = input.split(" : ");
+            String taskType = taskTest[0];
             if (taskType.equals("T")) {
-                if (task.length < 3) {
+                if (taskTest.length < 3) {
                     System.out.println("len < 3");
                     throw new InvalidInputException();
                 }
-                boolean isDone = task[1].equals("1");
-                String name = task[2];
+                boolean isDone = taskTest[1].equals("1");
+                String name = taskTest[2];
                 return new ToDo(name, isDone);
             } else if (taskType.equals("D")) {
-                if (task.length < 4) {
+                if (taskTest.length < 4) {
                     System.out.println("len < 4");
                     throw new InvalidInputException();
                 }
-                boolean isDone = task[1].equals("1");
-                String name = task[2];
-                String deadline = task[3];
-                return new Deadline(name, isDone, deadline);
+                boolean isDone = taskTest[1].equals("1");
+                String name = taskTest[2];
+                String deadlineTest = taskTest[3];
+                return new Deadline(name, isDone, deadlineTest);
             } else if (taskType.equals("E")) {
-                if (task.length < 5) {
+                if (taskTest.length < 5) {
                     System.out.println("len < 5");
                     throw new InvalidInputException();
                 }
-                boolean isDone = task[1].equals("1");
-                String name = task[2];
-                String start = task[3];
-                String end = task[4];
+                boolean isDone = taskTest[1].equals("1");
+                String name = taskTest[2];
+                String start = taskTest[3];
+                String end = taskTest[4];
                 return new Event(name, isDone, start, end);
             } else {
                 System.out.println("invalid command");
@@ -752,21 +752,21 @@ public class duke.ui.Luke {
     }
 
     public void run() {
-        ui.showWelcome();
+        uiTest.showWelcome();
         boolean isExit = false;
         while (!isExit) {
             try {
-                String fullCommand = ui.readCommand();
-                ui.showLine(); // show the divider line ("_______")
+                String fullCommand = uiTest.readCommand();
+                uiTest.showLine(); // show the divider line ("_______")
                 Command c = Parser.parse(fullCommand);
-                c.execute(tasks, ui, storage);
+                c.execute(tasks, uiTest, storage);
                 isExit = c.isExit();
             } catch (DukeException e) {
-                ui.showError(e.getMessage());
+                uiTest.showError(e.getMessage());
             } catch (IOException e) {
-                ui.showError("There was an error with the input");
+                uiTest.showError("There was an error with the input");
             } finally {
-                ui.showLine();
+                uiTest.showLine();
             }
         }
 
@@ -808,9 +808,9 @@ public class duke.ui.Luke {
                         String type = command;
                         if (type.equals("todo")) {
                             handleToDo(input);
-                        } else if (type.equals("deadline")) {
+                        } else if (type.equals("deadlineTest")) {
                             handleDeadline(input);
-                        } else if (type.equals("event")) {
+                        } else if (type.equals("eventTest")) {
                             handleEvent(input);
                         } else {
                             throw new InvalidInputException();
@@ -849,7 +849,7 @@ public class duke.ui.Luke {
 
     public static void main(String[] args) throws IOException, InvalidInputException, NumberFormatException, FileNotFoundException {
 
-        new duke.ui.Luke().run();
+        new duke.uiTest.Luke().run();
 
         public static void handleToDo(String input) throws InvalidInputException {
             // invalid input: [todo] or [todo ]
@@ -862,40 +862,40 @@ public class duke.ui.Luke {
         }
 
         public static void handleDeadline(String input) throws InvalidInputException {
-            // invalid input: [deadline] or [deadline ]
+            // invalid input: [deadlineTest] or [deadlineTest ]
             if (input.length() < 9 || input.substring(9).trim().isEmpty()) {
-                System.out.println("invalid input: [deadline] or [deadline ]");
+                System.out.println("invalid input: [deadlineTest] or [deadlineTest ]");
                 throw new InvalidInputException();
             }
             String[] inputArr = input.substring(9).split(" /by ");
-            // invalid input: [deadline *** /by ] or [deadline /by ***]
+            // invalid input: [deadlineTest *** /by ] or [deadlineTest /by ***]
             if (inputArr.length < 2) {
                 System.out.println(inputArr[0]);
-                System.out.println("invalid input: [deadline *** /by ] or [deadline /by ***]");
+                System.out.println("invalid input: [deadlineTest *** /by ] or [deadlineTest /by ***]");
                 throw new InvalidInputException();
             }
             String name = inputArr[0];
             String due = inputArr[1];
-            // invalid input: white spaces for name and deadline
+            // invalid input: white spaces for name and deadlineTest
             if (name.trim().isEmpty() || due.trim().isEmpty()) {
-                System.out.println("invalid input: empty task name or deadline");
+                System.out.println("invalid input: empty taskTest name or deadlineTest");
                 throw new InvalidInputException();
             }
             tasklist.add(new Deadline(name, false, due));
         }
 
         public static void handleEvent(String input) throws InvalidInputException {
-            // invalid input: [event] or [event ]
+            // invalid input: [eventTest] or [eventTest ]
             if (input.length() < 6 || input.substring(6).trim().isEmpty()) {
-                System.out.println("invalid input: [event] or [event ]");
+                System.out.println("invalid input: [eventTest] or [eventTest ]");
                 throw new InvalidInputException();
             }
 
             // split [name] /from [rest...]
             String[] inputArr = input.substring(6).split(" /from ");
-            // invalid input: [event *** /from ] or [event /from ***]
+            // invalid input: [eventTest *** /from ] or [eventTest /from ***]
             if (inputArr.length < 2) {
-                System.out.println("invalid input: [event *** /from ] or [event /from ***]");
+                System.out.println("invalid input: [eventTest *** /from ] or [eventTest /from ***]");
                 throw new InvalidInputException();
             }
             input = inputArr[1];
@@ -903,9 +903,9 @@ public class duke.ui.Luke {
 
             // split [start] /by [end]
             inputArr = input.split(" /to ");
-            // invalid input: [event *** /from *** /to ] or [event *** /from /to ***]
+            // invalid input: [eventTest *** /from *** /to ] or [eventTest *** /from /to ***]
             if (inputArr.length < 2) {
-                System.out.println("invalid input: [event *** /from *** /to ] or [event *** /from /to ***]");
+                System.out.println("invalid input: [eventTest *** /from *** /to ] or [eventTest *** /from /to ***]");
                 throw new InvalidInputException();
             }
             String start = inputArr[0];

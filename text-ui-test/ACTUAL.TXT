@@ -6,40 +6,35 @@ Hello I'm
 | |___| |_| |   <  __/
 |____/ \__,_|_|\_\___|
 
+____________________________________________________________
 Checking for saved list...
+No list found
+Creating new list...
 ____________________________________________________________
  Got it. I've added this taskTest:
    [T][ ] borrow book
  Now you have 1 tasks in the list.
 ____________________________________________________________
 ____________________________________________________________
- Got it. I've added this taskTest:
-   [D][ ] return book (by: Sunday)
- Now you have 2 tasks in the list.
+ OOPS!!! An unexpected error occurred: begin 6, end 10, length 6
 ____________________________________________________________
 ____________________________________________________________
- Got it. I've added this taskTest:
-   [E][ ] project meeting (from: Mon 2pm to: 4pm)
- Now you have 3 tasks in the list.
+ OOPS!!! An unexpected error occurred: begin 6, end 10, length 7
 ____________________________________________________________
 ____________________________________________________________
- Nice! I've marked this taskTest as done:
-   [D][X] return book (by: Sunday)
+ OOPS!!! An unexpected error occurred: Index 1 out of bounds for length 1
 ____________________________________________________________
 ____________________________________________________________
  Here are the tasks in your list:
  1.[T][ ] borrow book
- 2.[D][X] return book (by: Sunday)
- 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ____________________________________________________________
 ____________________________________________________________
- OK, I've marked this taskTest as not done yet:
-   [D][ ] return book (by: Sunday)
+ OOPS!!! An unexpected error occurred: Index 1 out of bounds for length 1
 ____________________________________________________________
 ____________________________________________________________
  Noted. I've removed this taskTest:
    [T][ ] borrow book
- Now you have 2 tasks in the list.
+ Now you have 0 tasks in the list.
 ____________________________________________________________
 invalid input: [deadlineTest] or [deadlineTest ]
 ____________________________________________________________
@@ -47,9 +42,8 @@ ____________________________________________________________
 ____________________________________________________________
 ____________________________________________________________
  Here are the tasks in your list:
- 1.[D][ ] return book (by: Sunday)
- 2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ____________________________________________________________
-____________________________________________________________
- Bye. Hope to see you again soon!
-____________________________________________________________
+Searching for list file...
+Could not find file ..\..\..\data\list.txt (The system cannot find the path specified)
+Creating new file...
+Saving list...
