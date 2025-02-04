@@ -6,6 +6,7 @@ import luke.exception.*;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 /**
  * The {@code Luke} class is the main entry point for the task management application.
@@ -74,17 +75,18 @@ public class Luke {
                 else if (command.equals("unmark")) markTask(Integer.parseInt(inputArr[1]) - 1, false);
                 else if (command.equals("list")) printList();
                 else if (command.equals("delete")) deleteTask(Integer.parseInt(inputArr[1]) - 1);
+                else if (command.equals("find")) findTask(inputArr[1]);
                 else { // add tasks
-                    String type = command;
-                    if (type.equals("todo")) {
+                    String taskType = command;
+                    if (taskType.equals("todo")) {
                         Task task = parseToDo(input);
                         this.taskList.addTask(task);
                         showTaskUpdates(task);
-                    } else if (type.equals("deadline")) {
+                    } else if (taskType.equals("deadline")) {
                         Task task = parseDeadline(input);
                         this.taskList.addTask(task);
                         showTaskUpdates(task);
-                    } else if (type.equals("event")) {
+                    } else if (taskType.equals("event")) {
                         Task task = parseEvent(input);
                         this.taskList.addTask(task);
                         showTaskUpdates(task);
@@ -252,6 +254,31 @@ public class Luke {
         System.out.println(" Noted. I've removed this task:");
         System.out.println("   " + task);
         System.out.println(" Now you have " + this.taskList.getSize() + " tasks in the list.");
+        this.ui.showLine();
+    }
+
+    public void findTask(String keyword) {
+        // build list
+        this.ui.showLine();
+        ArrayList<Task> resultList = new ArrayList<>();
+        String key = keyword.toUpperCase();
+        for (Task task : this.taskList.getList()) { // for each task
+            String[] nameParts = task.getName().split(" ");
+            for (String word : nameParts) { // check through full name
+                if (word.toUpperCase().equals(key)) {
+                    resultList.add(task);
+                }
+            }
+        }
+        // print list
+        if (resultList.isEmpty()) {
+            System.out.println(" There were no matches found.");
+        } else {
+            System.out.println(" Here are the matching tasks in your list:");
+            for (int i = 0; i < resultList.size(); i++) {
+                System.out.println(String.format(" %d.%s",i+1, resultList.get(i)));
+            }
+        }
         this.ui.showLine();
     }
 
