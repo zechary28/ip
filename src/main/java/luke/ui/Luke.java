@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class Luke {
 
-    private TaskList tasklist;
+    private TaskList taskList;
     private Ui ui;
     private Storage storage;
 
@@ -24,7 +24,7 @@ public class Luke {
      * and storage system. If the storage system cannot be found, the program will terminate.
      */
     public Luke() {
-        this.tasklist = new TaskList();
+        this.taskList = new TaskList();
         this.ui = new Ui();
         try {
             this.storage = new Storage();
@@ -54,8 +54,11 @@ public class Luke {
      * the "bye" command is issued.
      */
     public void run() {
+        // start-up
         this.ui.showWelcome();
         checkListFile();
+
+        // main loop
         while (true) {
             try {
                 String input = ui.readCommand();
@@ -75,15 +78,15 @@ public class Luke {
                     String type = command;
                     if (type.equals("todo")) {
                         Task task = parseToDo(input);
-                        this.tasklist.addTask(task);
+                        this.taskList.addTask(task);
                         showTaskUpdates(task);
                     } else if (type.equals("deadline")) {
                         Task task = parseDeadline(input);
-                        this.tasklist.addTask(task);
+                        this.taskList.addTask(task);
                         showTaskUpdates(task);
                     } else if (type.equals("event")) {
                         Task task = parseEvent(input);
-                        this.tasklist.addTask(task);
+                        this.taskList.addTask(task);
                         showTaskUpdates(task);
                     } else {
                         throw new InvalidInputException();
@@ -95,10 +98,12 @@ public class Luke {
                 ui.showLine();
             }
         }
+
+        // closing program
         try {
             writeListToFile();
         } catch (Exception e) {
-
+            System.out.println("There was a problem writing to the file");
         }
         this.ui.exit();
     }
@@ -113,7 +118,7 @@ public class Luke {
      * @throws InvalidInputException if the input is invalid
      */
     public static Task parseToDo(String input) throws InvalidInputException {
-        // invalid input: [t0do] or [t0do ]
+        // invalid input: [todo] or [todo ]
         if (input.length() < 5 || input.substring(5).trim().isEmpty()) {
             System.out.println("invalid input: [todo] or [todo ]");
             throw new InvalidInputException();
@@ -200,7 +205,7 @@ public class Luke {
         this.ui.showLine();
         System.out.println(" Got it. I've added this task:");
         System.out.println("   " + task);
-        System.out.println(" Now you have " + tasklist.getSize() + " tasks in the list.");
+        System.out.println(" Now you have " + taskList.getSize() + " tasks in the list.");
         this.ui.showLine();
     }
 
@@ -210,8 +215,8 @@ public class Luke {
     public void printList() {
         this.ui.showLine();
         System.out.println(" Here are the tasks in your list:");
-        for (int i = 0; i < this.tasklist.getSize(); i++) {
-            System.out.println(String.format(" %d.%s",i+1, this.tasklist.getList().get(i)));
+        for (int i = 0; i < this.taskList.getSize(); i++) {
+            System.out.println(String.format(" %d.%s",i+1, this.taskList.getList().get(i)));
         }
         this.ui.showLine();
     }
@@ -223,7 +228,7 @@ public class Luke {
      * @param isDone whether the task should be marked as done
      */
     public void markTask(int i, boolean isDone) {
-        Task task = this.tasklist.getTask(i);
+        Task task = this.taskList.getTask(i);
         task.setIsDone(isDone);
         this.ui.showLine();
         if (isDone) {
@@ -242,11 +247,11 @@ public class Luke {
      * @param i the index of the task to delete
      */
     public void deleteTask(int i) {
-        Task task = this.tasklist.deleteTask(i);
+        Task task = this.taskList.deleteTask(i);
         this.ui.showLine();
         System.out.println(" Noted. I've removed this task:");
         System.out.println("   " + task);
-        System.out.println(" Now you have " + this.tasklist.getSize() + " tasks in the list.");
+        System.out.println(" Now you have " + this.taskList.getSize() + " tasks in the list.");
         this.ui.showLine();
     }
 
@@ -279,7 +284,7 @@ public class Luke {
         while (this.storage.hasNext()) {
             String task = this.storage.readLine();
             try {
-                this.tasklist.addTask(readTask(task));
+                this.taskList.addTask(readTask(task));
             } catch (InvalidInputException e) {
                 this.ui.showLine();
                 System.out.println(" There was something wrong with this task.");
@@ -340,8 +345,8 @@ public class Luke {
     public void writeListToFile() throws IOException {
         this.storage.clearFile();
         System.out.println("Saving list...");
-        storage.writeLine(String.format("list: %d", this.tasklist.getSize()));
-        for (Task task : tasklist.getList()) {
+        storage.writeLine(String.format("list: %d", this.taskList.getSize()));
+        for (Task task : taskList.getList()) {
             if (task instanceof ToDo) {
                 ToDo todo = (ToDo) task;
                 this.storage.writeLine(String.format("T : %s : %s", todo.getIsDone()? "1" : "0", todo.getName()));
