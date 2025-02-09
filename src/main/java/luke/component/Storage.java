@@ -13,9 +13,9 @@ import java.util.Scanner;
  * check if the file exists and has content, and clear the file.
  */
 public class Storage {
-    private final String READ_FILE_PATH = "data/list.txt";
-    private final String WRITE_FILE_PATH = "data/list.txt";
-    Scanner scanner;
+    private static final String READ_FILE_PATH = "data/list.txt";
+    private static final String WRITE_FILE_PATH = "data/list.txt";
+    private Scanner scanner;
 
     /**
      * Constructs a Storage object and initializes a Scanner to read from the file
@@ -54,7 +54,9 @@ public class Storage {
      *
      * @return true if there are more lines to be read, false otherwise
      */
-    public boolean hasNext() { return scanner.hasNext(); }
+    public boolean hasNext() {
+        return scanner.hasNext();
+    }
 
     /**
      * Checks if the file located at the READ_FILE_PATH exists and can be written to.

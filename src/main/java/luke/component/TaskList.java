@@ -1,7 +1,8 @@
 package luke.component;
 
-import luke.task.Task;
 import java.util.ArrayList;
+
+import luke.task.Task;
 
 /**
  * The {@code TaskList} class represents a list of tasks.

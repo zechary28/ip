@@ -1,12 +1,18 @@
 package luke.ui;
 
-import luke.task.*;
-import luke.component.*;
-import luke.exception.*;
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+
+import luke.component.Storage;
+import luke.component.TaskList;
+import luke.component.Ui;
+import luke.exception.InvalidInputException;
+import luke.task.Deadline;
+import luke.task.Event;
+import luke.task.Task;
+import luke.task.ToDo;
 
 /**
  * The {@code Luke} class is the main entry point for the task management application.
@@ -45,7 +51,7 @@ public class Luke {
      * @throws NumberFormatException if a non-numeric value is encountered where a number is expected
      * @throws FileNotFoundException if the task file is not found
      */
-    public static void main(String[] args) throws IOException, InvalidInputException, NumberFormatException, FileNotFoundException {
+    public static void main(String[] args) throws NumberFormatException, FileNotFoundException {
         new Luke().run();
     }
 
@@ -70,13 +76,19 @@ public class Luke {
                 // determine command
                 String[] inputArr = input.split(" ");
                 String command = inputArr[0];
-                if (command.equals("bye")) break;
-                else if (command.equals("mark")) markTask(Integer.parseInt(inputArr[1]) - 1, true);
-                else if (command.equals("unmark")) markTask(Integer.parseInt(inputArr[1]) - 1, false);
-                else if (command.equals("list")) printList();
-                else if (command.equals("delete")) deleteTask(Integer.parseInt(inputArr[1]) - 1);
-                else if (command.equals("find")) findTask(inputArr[1]);
-                else { // add tasks
+                if (command.equals("bye")) {
+                    break;
+                } else if (command.equals("mark")) {
+                    markTask(Integer.parseInt(inputArr[1]) - 1, true);
+                } else if (command.equals("unmark")) {
+                    markTask(Integer.parseInt(inputArr[1]) - 1, false);
+                } else if (command.equals("list")) {
+                    printList();
+                } else if (command.equals("delete")) {
+                    deleteTask(Integer.parseInt(inputArr[1]) - 1);
+                } else if (command.equals("find")) {
+                    findTask(inputArr[1]);
+                } else { // add tasks
                     String taskType = command;
                     if (taskType.equals("todo")) {
                         Task task = parseToDo(input);
@@ -192,7 +204,9 @@ public class Luke {
         }
         String start = inputArr[0];
         String end = inputArr[1];
-        if (start.trim().isEmpty() || end.trim().isEmpty()) throw new InvalidInputException();
+        if (start.trim().isEmpty() || end.trim().isEmpty()) {
+            throw new InvalidInputException();
+        }
         return new Event(name, false, start, end);
     }
 
@@ -218,7 +232,7 @@ public class Luke {
         this.ui.showLine();
         System.out.println(" Here are the tasks in your list:");
         for (int i = 0; i < this.taskList.getSize(); i++) {
-            System.out.println(String.format(" %d.%s",i+1, this.taskList.getList().get(i)));
+            System.out.println(String.format(" %d.%s", i + 1, this.taskList.getList().get(i)));
         }
         this.ui.showLine();
     }
@@ -257,6 +271,13 @@ public class Luke {
         this.ui.showLine();
     }
 
+    /**
+     * Finds tasks in the task list that contain the specified keyword (case-insensitive)
+     * as a whole word and prints the matching tasks.
+     *
+     * @param keyword the keyword to search for within the task names.
+     *                The search is case-insensitive and matches whole words.
+     */
     public void findTask(String keyword) {
         // build list
         this.ui.showLine();
@@ -276,7 +297,7 @@ public class Luke {
         } else {
             System.out.println(" Here are the matching tasks in your list:");
             for (int i = 0; i < resultList.size(); i++) {
-                System.out.println(String.format(" %d.%s",i+1, resultList.get(i)));
+                System.out.println(String.format(" %d.%s", i + 1, resultList.get(i)));
             }
         }
         this.ui.showLine();
@@ -376,16 +397,18 @@ public class Luke {
         for (Task task : taskList.getList()) {
             if (task instanceof ToDo) {
                 ToDo todo = (ToDo) task;
-                this.storage.writeLine(String.format("T : %s : %s", todo.getIsDone()? "1" : "0", todo.getName()));
+                this.storage.writeLine(String.format("T : %s : %s", todo.getIsDone() ? "1" : "0", todo.getName()));
             } else if (task instanceof Deadline) {
                 Deadline deadline = (Deadline) task;
-                this.storage.writeLine(String.format("D : %s : %s : %s", deadline.getIsDone()? "1" : "0", deadline.getName()
-                        , deadline.getDueTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+                this.storage.writeLine(String.format("D : %s : %s : %s",
+                        deadline.getIsDone() ? "1" : "0", deadline.getName(),
+                        deadline.getDueTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
             } else if (task instanceof Event) {
                 Event event = (Event) task;
-                this.storage.writeLine(String.format("E : %s : %s : %s : %s", event.getIsDone()? "1" : "0", event.getName()
-                        , event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-                        , event.getEndTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+                this.storage.writeLine(String.format("E : %s : %s : %s : %s",
+                        event.getIsDone() ? "1" : "0", event.getName(),
+                        event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                        event.getEndTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
             }
         }
         System.out.println("Saved successfully");

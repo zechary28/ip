@@ -1,13 +1,13 @@
 package luke.component;
 
+import java.util.ArrayList;
+
 import luke.task.TaskTest;
 import luke.task.ToDoStub;
 import luke.task.DeadlineStub;
 import luke.task.EventStub;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.util.ArrayList;
 
 
 public class TaskListTest {

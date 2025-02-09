@@ -27,13 +27,23 @@ public class Event extends Task {
         super(name, isDone);
         // input format of start and end: [DD/MM/YYYY HH:MM]
         // required format        : [YYYY:MM:DDTHH:MM:SS]
-        String startDay = start.substring(0, 2), startMonth = start.substring(3, 5), startYear = start.substring(6, 10);
-        String startHour = start.substring(11, 13), startMinute = start.substring(14, 16);
-        String startTimeString = String.format("%s-%s-%sT%s:%s:00", startYear, startMonth, startDay, startHour, startMinute);
+        String startDay = start.substring(0, 2);
+        String startMonth = start.substring(3, 5);
+        String startYear = start.substring(6, 10);
+        String startHour = start.substring(11, 13);
+        String startMinute = start.substring(14, 16);
+        String startTimeString = String.format("%s-%s-%sT%s:%s:00",
+                startYear, startMonth, startDay,
+                startHour, startMinute);
 
-        String endDay = end.substring(0, 2), endMonth = end.substring(3, 5), endYear = end.substring(6, 10);
-        String endHour = end.substring(11, 13), endMinute = end.substring(14, 16);
-        String endTimeString = String.format("%s-%s-%sT%s:%s:00", endYear, endMonth, endDay, endHour, endMinute);
+        String endDay = end.substring(0, 2);
+        String endMonth = end.substring(3, 5);
+        String endYear = end.substring(6, 10);
+        String endHour = end.substring(11, 13);
+        String endMinute = end.substring(14, 16);
+        String endTimeString = String.format("%s-%s-%sT%s:%s:00",
+                endYear, endMonth, endDay,
+                endHour, endMinute);
 
         this.startTime = LocalDateTime.parse(startTimeString);
         this.endTime = LocalDateTime.parse(endTimeString);

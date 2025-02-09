@@ -9,14 +9,20 @@ public class DeadlineStub extends TaskTest {
         super(name, isDone);
     }
 
-    public String getName() { return "DeadlineStub"; }
+    public String getName() {
+        return "DeadlineStub";
+    }
 
     public void setIsDone(boolean isDone) {
     }
 
-    public LocalDateTime getDueTime() { return LocalDateTime.parse("2025-01-01T01:01:01"); }
+    public LocalDateTime getDueTime() {
+        return LocalDateTime.parse("2025-01-01T01:01:01");
+    }
 
-    public boolean getIsDone() { return true; }
+    public boolean getIsDone() {
+        return true;
+    }
 
     @Override
     public String toString() {

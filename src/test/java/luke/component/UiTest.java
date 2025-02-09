@@ -6,15 +6,16 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 public class UiTest {
-    //io
-    BufferedReader reader;
-    PrintWriter writer;
 
     private static final String LOGO = " _           _\n"
             + "| |    _   _| | _____\n"
             + "| |   | | | | |/ / _ \\\n"
             + "| |___| |_| |   <  __/\n"
             + "|____/ \\__,_|_|\\_\\___|\n";
+
+    //io
+    private BufferedReader reader;
+    private PrintWriter writer;
 
     public UiTest() {
         reader = new BufferedReader(new InputStreamReader(System.in));

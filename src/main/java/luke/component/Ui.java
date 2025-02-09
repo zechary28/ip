@@ -12,15 +12,15 @@ import java.io.PrintWriter;
  */
 public class Ui {
 
-    // IO
-    BufferedReader reader;
-    PrintWriter writer;
-
     private static final String LOGO = " _           _\n"
             + "| |    _   _| | _____\n"
             + "| |   | | | | |/ / _ \\\n"
             + "| |___| |_| |   <  __/\n"
             + "|____/ \\__,_|_|\\_\\___|\n";
+
+    // IO
+    private BufferedReader reader;
+    private PrintWriter writer;
 
     /**
      * Constructs a new {@code Ui} object, initializing the reader and writer

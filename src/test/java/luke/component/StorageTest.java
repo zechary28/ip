@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class StorageTest {
-    private final String READ_FILE_PATH = "data/list.txt";
-    private final String WRITE_FILE_PATH = "data/list.txt";
-    Scanner scanner;
+    private static final String READ_FILE_PATH = "data/list.txt";
+    private static final String WRITE_FILE_PATH = "data/list.txt";
+    private Scanner scanner;
 
     public StorageTest() throws FileNotFoundException {
         this.scanner = new Scanner(new File(READ_FILE_PATH));
