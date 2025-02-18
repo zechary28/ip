@@ -88,6 +88,7 @@ public class Luke {
                     this.taskList.addTask(task);
                     showTaskUpdates(task);
                 } else {
+                    assert this.output.isEmpty() : "output should be empty";
                     return "I don't understand";
                 }
             } catch (InvalidInputException e) {
@@ -111,7 +112,7 @@ public class Luke {
         } catch (Exception e) {
             this.output.append("There was a problem writing to the file\n");
         }
-        this.output.append(this.ui.exit() + "\n");
+        this.output.append(this.ui.exit()).append("\n");
         return this.output.toString();
     }
 
@@ -131,6 +132,9 @@ public class Luke {
             throw new InvalidInputException();
         }
         String name = input.substring(5);
+
+        assert !name.trim().isEmpty() : "name should not be empty";
+
         return new ToDo(name, false);
     }
 
@@ -155,11 +159,11 @@ public class Luke {
         }
         String name = inputArr[0];
         String due = inputArr[1];
+
+        assert !name.trim().isEmpty() : "name should not be empty";
+        assert !due.trim().isEmpty() : "deadline should not be empty";
+
         // invalid input: white spaces for name and deadline
-        if (name.trim().isEmpty() || due.trim().isEmpty()) {
-            this.output.append("invalid input: empty task name or deadline\n");
-            throw new InvalidInputException();
-        }
         return new Deadline(name, false, due);
     }
 
@@ -196,9 +200,11 @@ public class Luke {
         }
         String start = inputArr[0];
         String end = inputArr[1];
-        if (start.trim().isEmpty() || end.trim().isEmpty()) {
-            throw new InvalidInputException();
-        }
+
+        assert !name.trim().isEmpty() : "name should not be empty";
+        assert !start.trim().isEmpty() : "start time should not be empty";
+        assert !end.trim().isEmpty() : "end time should not be empty";
+
         return new Event(name, false, start, end);
     }
 
