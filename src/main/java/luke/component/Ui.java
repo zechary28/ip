@@ -34,17 +34,15 @@ public class Ui {
     /**
      * Displays a separator line in the console.
      */
-    public void showLine() {
-        System.out.println("____________________________________________________________");
+    public String showLine() {
+        return "____________________________________________________________";
     }
 
     /**
      * Displays a welcome message with the application logo.
      */
-    public void showWelcome() {
-        showLine();
-        System.out.println("Hello I'm\n" + LOGO);
-        showLine();
+    public String showWelcome() {
+        return "Hello I'm\n" + LOGO;
     }
 
     /**
@@ -52,20 +50,15 @@ public class Ui {
      *
      * @param message the error message to be displayed
      */
-    public void showError(String message) {
-        showLine();
-        System.out.println("There was an error: " + message);
-        showLine();
+    public String showError(String message) {
+        return "There was an error: " + message;
     }
 
     /**
      * Displays an exit message and terminates the program.
      */
-    public void exit() {
-        showLine();
-        System.out.println(" Bye. Hope to see you again soon!");
-        showLine();
-        System.exit(0);
+    public String exit() {
+        return " Bye. Hope to see you again soon!";
     }
 
     /**

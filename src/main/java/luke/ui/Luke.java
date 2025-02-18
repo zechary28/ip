@@ -26,6 +26,8 @@ public class Luke {
     private Ui ui;
     private Storage storage;
 
+    private StringBuilder output;
+
     /**
      * Constructs a new {@code Luke} object which initializes the task list, user interface,
      * and storage system. If the storage system cannot be found, the program will terminate.
@@ -39,87 +41,78 @@ public class Luke {
             System.out.println("No file for storage found, exiting program");
             System.exit(0);
         }
+        this.output = new StringBuilder();
     }
 
     /**
-     * The main entry point of the program which starts the task management loop.
-     * It handles user input, processes commands, and maintains the task list.
-     *
-     * @param args command-line arguments (not used in this context)
-     * @throws IOException if an I/O error occurs
-     * @throws InvalidInputException if the input is invalid
-     * @throws NumberFormatException if a non-numeric value is encountered where a number is expected
-     * @throws FileNotFoundException if the task file is not found
+     * Generates a response for the user's chat message.
      */
-    public static void main(String[] args) throws NumberFormatException, FileNotFoundException {
-        new Luke().run();
-    }
-
-    /**
-     * Runs the task management program. Continuously reads commands from the user, processes them,
-     * and performs corresponding actions (mark, unmark, add, delete tasks). Exits the program when
-     * the "bye" command is issued.
-     */
-    public void run() {
-        // start-up
-        this.ui.showWelcome();
-        checkListFile();
-
-        // main loop
-        while (true) {
+    public String getResponse(String input) {
+        this.output = new StringBuilder();
+        if (input == null || input.trim().isEmpty()) {
+            return "No input detected";
+        }
+        // determine command
+        String[] inputArr = input.split(" ");
+        String command = inputArr[0];
+        if (command.equals("bye")) {
             try {
-                String input = ui.readCommand();
-                if (input == null || input.trim().isEmpty()) {
-                    System.out.println("No input detected");
-                    throw new InvalidInputException();
-                }
-                // determine command
-                String[] inputArr = input.split(" ");
-                String command = inputArr[0];
-                if (command.equals("bye")) {
-                    break;
-                } else if (command.equals("mark")) {
-                    markTask(Integer.parseInt(inputArr[1]) - 1, true);
-                } else if (command.equals("unmark")) {
-                    markTask(Integer.parseInt(inputArr[1]) - 1, false);
-                } else if (command.equals("list")) {
-                    printList();
-                } else if (command.equals("delete")) {
-                    deleteTask(Integer.parseInt(inputArr[1]) - 1);
-                } else if (command.equals("find")) {
-                    findTask(inputArr[1]);
-                } else { // add tasks
-                    String taskType = command;
-                    if (taskType.equals("todo")) {
-                        Task task = parseToDo(input);
-                        this.taskList.addTask(task);
-                        showTaskUpdates(task);
-                    } else if (taskType.equals("deadline")) {
-                        Task task = parseDeadline(input);
-                        this.taskList.addTask(task);
-                        showTaskUpdates(task);
-                    } else if (taskType.equals("event")) {
-                        Task task = parseEvent(input);
-                        this.taskList.addTask(task);
-                        showTaskUpdates(task);
-                    } else {
-                        throw new InvalidInputException();
-                    }
-                }
+                writeListToFile();
             } catch (Exception e) {
-                ui.showError(e.getMessage());
-            } finally {
-                ui.showLine();
+                this.output.append("There was a problem writing to the file\n");
+            }
+            System.exit(0);
+        } else if (command.equals("mark")) {
+            markTask(Integer.parseInt(inputArr[1]) - 1, true);
+        } else if (command.equals("unmark")) {
+            markTask(Integer.parseInt(inputArr[1]) - 1, false);
+        } else if (command.equals("list")) {
+            printList();
+        } else if (command.equals("delete")) {
+            deleteTask(Integer.parseInt(inputArr[1]) - 1);
+        } else if (command.equals("find")) {
+            findTask(inputArr[1]);
+        } else { // add tasks
+            try {
+                String taskType = command;
+                if (taskType.equals("todo")) {
+                    Task task = parseToDo(input);
+                    this.taskList.addTask(task);
+                    showTaskUpdates(task);
+                } else if (taskType.equals("deadline")) {
+                    Task task = parseDeadline(input);
+                    this.taskList.addTask(task);
+                    showTaskUpdates(task);
+                } else if (taskType.equals("event")) {
+                    Task task = parseEvent(input);
+                    this.taskList.addTask(task);
+                    showTaskUpdates(task);
+                } else {
+                    return "I don't understand";
+                }
+            } catch (InvalidInputException e) {
+                return e.getMessage();
             }
         }
+        return this.output.toString();
+    }
 
-        // closing program
+    public String getStartUp() {
+        this.output = new StringBuilder();
+        this.output.append(this.ui.showWelcome());
+        checkListFile();
+        return this.output.toString();
+    }
+
+    public String getShutDown() {
+        this.output = new StringBuilder();
         try {
             writeListToFile();
         } catch (Exception e) {
-            System.out.println("There was a problem writing to the file");
+            this.output.append("There was a problem writing to the file\n");
         }
-        this.ui.exit();
+        this.output.append(this.ui.exit() + "\n");
+        return this.output.toString();
     }
 
     // Parsers for task creation
@@ -131,10 +124,10 @@ public class Luke {
      * @return a new {@code ToDo} task
      * @throws InvalidInputException if the input is invalid
      */
-    public static Task parseToDo(String input) throws InvalidInputException {
+    public Task parseToDo(String input) throws InvalidInputException {
         // invalid input: [todo] or [todo ]
         if (input.length() < 5 || input.substring(5).trim().isEmpty()) {
-            System.out.println("invalid input: [todo] or [todo ]");
+            this.output.append("invalid input: [todo] or [todo ]\n");
             throw new InvalidInputException();
         }
         String name = input.substring(5);
@@ -148,24 +141,23 @@ public class Luke {
      * @return a new {@code Deadline} task
      * @throws InvalidInputException if the input is invalid
      */
-    public static Task parseDeadline(String input) throws InvalidInputException {
+    public Task parseDeadline(String input) throws InvalidInputException {
         // invalid input: [deadline] or [deadline ]
         if (input.length() < 9 || input.substring(9).trim().isEmpty()) {
-            System.out.println("invalid input: [deadline] or [deadline ]");
+            this.output.append("invalid input: [deadline] or [deadline ]\n");
             throw new InvalidInputException();
         }
         String[] inputArr = input.substring(9).split(" /by ");
         // invalid input: [deadline *** /by ] or [deadline /by ***]
         if (inputArr.length < 2) {
-            System.out.println(inputArr[0]);
-            System.out.println("invalid input: [deadline *** /by ] or [deadline /by ***]");
+            this.output.append("invalid input: [deadline *** /by ] or [deadline /by ***]\n");
             throw new InvalidInputException();
         }
         String name = inputArr[0];
         String due = inputArr[1];
         // invalid input: white spaces for name and deadline
         if (name.trim().isEmpty() || due.trim().isEmpty()) {
-            System.out.println("invalid input: empty task name or deadline");
+            this.output.append("invalid input: empty task name or deadline\n");
             throw new InvalidInputException();
         }
         return new Deadline(name, false, due);
@@ -178,10 +170,10 @@ public class Luke {
      * @return a new {@code Event} task
      * @throws InvalidInputException if the input is invalid
      */
-    public static Task parseEvent(String input) throws InvalidInputException {
+    public Task parseEvent(String input) throws InvalidInputException {
         // invalid input: [event] or [event ]
         if (input.length() < 6 || input.substring(6).trim().isEmpty()) {
-            System.out.println("invalid input: [event] or [event ]");
+            this.output.append("invalid input: [event] or [event ]\n");
             throw new InvalidInputException();
         }
 
@@ -189,7 +181,7 @@ public class Luke {
         String[] inputArr = input.substring(6).split(" /from ");
         // invalid input: [event *** /from ] or [event /from ***]
         if (inputArr.length < 2) {
-            System.out.println("invalid input: [event *** /from ] or [event /from ***]");
+            this.output.append("invalid input: [event *** /from ] or [event /from ***]\n");
             throw new InvalidInputException();
         }
         input = inputArr[1];
@@ -199,7 +191,7 @@ public class Luke {
         inputArr = input.split(" /to ");
         // invalid input: [event *** /from *** /to ] or [event *** /from /to ***]
         if (inputArr.length < 2) {
-            System.out.println("invalid input: [event *** /from *** /to ] or [event *** /from /to ***]");
+            this.output.append("invalid input: [event *** /from *** /to ] or [event *** /from /to ***]\n");
             throw new InvalidInputException();
         }
         String start = inputArr[0];
@@ -218,23 +210,19 @@ public class Luke {
      * @param task the task that was added
      */
     public void showTaskUpdates(Task task) {
-        this.ui.showLine();
-        System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + task);
-        System.out.println(" Now you have " + taskList.getSize() + " tasks in the list.");
-        this.ui.showLine();
+        this.output.append("Got it. I've added this task:\n");
+        this.output.append("  " + task + "\n");
+        this.output.append("Now you have " + taskList.getSize() + " tasks in the list.\n");
     }
 
     /**
      * Prints the list of tasks to the UI.
      */
     public void printList() {
-        this.ui.showLine();
-        System.out.println(" Here are the tasks in your list:");
+        this.output.append(" Here are the tasks in your list:\n");
         for (int i = 0; i < this.taskList.getSize(); i++) {
-            System.out.println(String.format(" %d.%s", i + 1, this.taskList.getList().get(i)));
+            this.output.append(String.format(" %d.%s", i + 1, this.taskList.getList().get(i)) + "\n");
         }
-        this.ui.showLine();
     }
 
     /**
@@ -246,15 +234,13 @@ public class Luke {
     public void markTask(int i, boolean isDone) {
         Task task = this.taskList.getTask(i);
         task.setIsDone(isDone);
-        this.ui.showLine();
         if (isDone) {
-            System.out.println(" Nice! I've marked this task as done:");
-            System.out.println("   " + task);
+            this.output.append("Nice! I've marked this task as done:\n");
+            this.output.append("   " + task + "\n");
         } else {
-            System.out.println(" OK, I've marked this task as not done yet:");
-            System.out.println("   " + task);
+            this.output.append("OK, I've marked this task as not done yet:\n");
+            this.output.append("   " + task + "\n");
         }
-        this.ui.showLine();
     }
 
     /**
@@ -264,11 +250,9 @@ public class Luke {
      */
     public void deleteTask(int i) {
         Task task = this.taskList.deleteTask(i);
-        this.ui.showLine();
-        System.out.println(" Noted. I've removed this task:");
-        System.out.println("   " + task);
-        System.out.println(" Now you have " + this.taskList.getSize() + " tasks in the list.");
-        this.ui.showLine();
+        this.output.append("Noted. I've removed this task: \n");
+        this.output.append("  " + task + "\n");
+        this.output.append("Now you have " + this.taskList.getSize() + " tasks in the list.\n");
     }
 
     /**
@@ -280,7 +264,6 @@ public class Luke {
      */
     public void findTask(String keyword) {
         // build list
-        this.ui.showLine();
         ArrayList<Task> resultList = new ArrayList<>();
         String key = keyword.toUpperCase();
         for (Task task : this.taskList.getList()) { // for each task
@@ -293,31 +276,29 @@ public class Luke {
         }
         // print list
         if (resultList.isEmpty()) {
-            System.out.println(" There were no matches found.");
+            this.output.append("There were no matches found.\n");
         } else {
-            System.out.println(" Here are the matching tasks in your list:");
-            for (int i = 0; i < resultList.size(); i++) {
-                System.out.println(String.format(" %d.%s", i + 1, resultList.get(i)));
+            this.output.append(" Here are the matching tasks in your list:\n");
+            for (int i = 0; i < this.taskList.getSize(); i++) {
+                this.output.append(String.format(" %d.%s", i + 1, this.taskList.getList().get(i)) + "\n");
             }
         }
-        this.ui.showLine();
     }
 
     /**
      * Checks if a saved task list file exists and loads it, or creates a new list if no file is found.
      */
     public void checkListFile() {
-        boolean foundList = true;
+        boolean isFound = true;
         try {
             readListFile();
         } catch (FileNotFoundException e) {
-            System.out.println("No list found");
-            System.out.println("Creating new list...");
-            foundList = false;
+            this.output.append("No list found\n");
+            this.output.append("Creating new list...\n");
+            isFound = false;
         } finally {
-            if (foundList) {
+            if (isFound) {
                 printList();
-                this.ui.showLine();
             }
         }
     }
@@ -334,10 +315,8 @@ public class Luke {
             try {
                 this.taskList.addTask(readTask(task));
             } catch (InvalidInputException e) {
-                this.ui.showLine();
-                System.out.println(" There was something wrong with this task.");
-                System.out.println(" " + task);
-                this.ui.showLine();
+                this.output.append(" There was something wrong with this task.\n");
+                this.output.append(" " + task + "\n");
             }
         }
     }
@@ -354,7 +333,7 @@ public class Luke {
         String taskType = task[0];
         if (taskType.equals("T")) {
             if (task.length < 3) {
-                System.out.println("len < 3");
+                this.output.append("len < 3\n");
                 throw new InvalidInputException();
             }
             boolean isDone = task[1].equals("1");
@@ -362,7 +341,7 @@ public class Luke {
             return new ToDo(name, isDone);
         } else if (taskType.equals("D")) {
             if (task.length < 4) {
-                System.out.println("len < 4");
+                this.output.append("len < 4\n");
                 throw new InvalidInputException();
             }
             boolean isDone = task[1].equals("1");
@@ -371,7 +350,7 @@ public class Luke {
             return new Deadline(name, isDone, deadline);
         } else if (taskType.equals("E")) {
             if (task.length < 5) {
-                System.out.println("len < 5");
+                this.output.append("len < 5\n");
                 throw new InvalidInputException();
             }
             boolean isDone = task[1].equals("1");
@@ -380,7 +359,7 @@ public class Luke {
             String end = task[4];
             return new Event(name, isDone, start, end);
         } else {
-            System.out.println("invalid command");
+            this.output.append("invalid command\n");
             throw new InvalidInputException();
         }
     }
@@ -392,7 +371,7 @@ public class Luke {
      */
     public void writeListToFile() throws IOException {
         this.storage.clearFile();
-        System.out.println("Saving list...");
+        this.output.append("Saving list...\n");
         storage.writeLine(String.format("list: %d", this.taskList.getSize()));
         for (Task task : taskList.getList()) {
             if (task instanceof ToDo) {
@@ -411,6 +390,6 @@ public class Luke {
                         event.getEndTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
             }
         }
-        System.out.println("Saved successfully");
+        this.output.append("Saved successfully\n");
     }
 }
