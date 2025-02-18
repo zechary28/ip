@@ -42,6 +42,13 @@ public class Luke {
     }
 
     /**
+     * Generates a response for the user's chat message.
+     */
+    public String getResponse(String input) {
+        return "Luke heard: " + input;
+    }
+
+    /**
      * The main entry point of the program which starts the task management loop.
      * It handles user input, processes commands, and maintains the task list.
      *
