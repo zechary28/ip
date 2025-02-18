@@ -81,4 +81,19 @@ public class Deadline extends Task {
         return String.format("[D][%s] %s (by: %s)", this.isDone ? "X" : " ",
                 this.name, this.dueTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")));
     }
+
+    public int compareTo(Task t) {
+        if (t instanceof ToDo) { // todo < deadline < event < everything else
+            return 1;
+        } else if (t instanceof Deadline){ // sort by time
+            if (this.isDone != t.isDone) {
+                return this.isDone ? 1 : -1;
+            } else {
+                Deadline dl = (Deadline) t;
+                return this.dueTime.compareTo(dl.dueTime);
+            }
+        } else { // todo < deadline < event < everything else
+            return -1;
+        }
+    }
 }

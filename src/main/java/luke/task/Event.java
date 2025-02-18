@@ -106,4 +106,19 @@ public class Event extends Task {
                 this.startTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")),
                 this.endTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")));
     }
+
+    public int compareTo(Task t) {
+        if (t instanceof ToDo || t instanceof Deadline) { // todo < deadline < event < everything else
+            return 1;
+        } else if (t instanceof Event){ // sort by time
+            if (this.isDone != t.isDone) {
+                return this.isDone ? 1 : -1;
+            } else {
+                Event ev = (Event) t;
+                return this.startTime.compareTo(ev.startTime);
+            }
+        } else { // todo < deadline < event < everything else
+            return -1;
+        }
+    }
 }

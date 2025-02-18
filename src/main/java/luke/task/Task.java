@@ -5,7 +5,7 @@ package luke.task;
  * Subclasses must implement the methods to get and set the task's name, completion status,
  * and provide a string representation of the task.
  */
-public abstract class Task {
+public abstract class Task implements Comparable<Task> {
 
     protected String name;
     protected boolean isDone;

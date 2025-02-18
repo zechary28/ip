@@ -72,6 +72,8 @@ public class Luke {
             deleteTask(Integer.parseInt(inputArr[1]) - 1);
         } else if (command.equals("find")) {
             findTask(inputArr[1]);
+        } else if (command.equals("sort")) {
+            showSortedList();
         } else { // add tasks
             handleAddTask(input);
         }
@@ -288,6 +290,55 @@ public class Luke {
         } else {
             printList(resultList);
         }
+    }
+
+    // Sorting
+    private void merge(ArrayList<Task> array, int low, int mid, int high) {
+        // subarray1 = array[low..mid], subarray2 = array[mid+1..high], both sorted
+        int left = low;
+        int right = mid + 1;
+        ArrayList<Task> backupList = new ArrayList<>();
+
+        // Merging both subarrays
+        while (left <= mid && right <= high) {
+            Task earlierTask = array.get(left).compareTo(array.get(right)) < 0
+                    ? array.get(left++)
+                    : array.get(right++);
+            backupList.add(earlierTask);
+        }
+
+        // Copy any remaining elements from the left subarray
+        while (left <= mid) {
+            backupList.add(array.get(left++));
+        }
+
+        // Copy any remaining elements from the right subarray
+        while (right <= high) {
+            backupList.add(array.get(right++));
+        }
+
+        // Copy the sorted elements back into the original array
+        for (int i = 0; i < backupList.size(); i++) {
+            array.set(low + i, backupList.get(i));
+        }
+    }
+
+    private void mergeSort(ArrayList<Task> array, int low, int high) {
+        // the array to be sorted is array[low..high]
+        if (low < high) { // base case: low >= high (0 or 1 item)
+            int mid = (low + high) / 2;
+            mergeSort(array, low, mid); // divide into two halves
+            mergeSort(array,mid + 1, high); // then recursively sort them
+            merge(array, low, mid, high); // conquer: the merge routine
+        }
+    }
+
+    public void showSortedList() {
+        // clone list
+        ArrayList<Task> cloneList = new ArrayList<>();
+        cloneList.addAll(this.taskList.getList());
+        mergeSort(cloneList, 0, cloneList.size() - 1);
+        printList(cloneList);
     }
 
     /**

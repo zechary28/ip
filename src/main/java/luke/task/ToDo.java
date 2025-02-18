@@ -56,4 +56,16 @@ public class ToDo extends Task {
     public String toString() {
         return String.format("[T][%s] %s", this.isDone ? "X" : " ", this.name);
     }
+
+    public int compareTo(Task t) {
+        if (t instanceof ToDo) {
+            if (this.isDone != t.isDone) {
+                return this.isDone ? 1 : -1;
+            } else {
+                return this.name.compareTo(t.getName());
+            }
+        } else { // todo < deadline < event < everything else
+            return -1;
+        }
+    }
 }
