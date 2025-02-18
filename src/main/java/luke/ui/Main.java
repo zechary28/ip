@@ -24,7 +24,20 @@ public class Main extends Application {
             stage.setScene(scene);
             stage.setMinHeight(220);
             stage.setMinHeight(417);
-            fxmlLoader.<MainWindow>getController().setDuke(luke);  // inject the Duke instance
+
+            // get controller
+            MainWindow controller = fxmlLoader.<MainWindow>getController();
+
+            controller.setDuke(luke);  // inject the Duke instance
+
+            // bind lifecycle events
+            stage.setOnShown(event -> controller.handleStartUp());
+            stage.setOnCloseRequest(event -> {
+                controller.handleShutDown();
+                // Ensure the application exits
+                stage.close();
+            });
+
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
