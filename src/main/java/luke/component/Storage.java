@@ -13,8 +13,8 @@ import java.util.Scanner;
  * check if the file exists and has content, and clear the file.
  */
 public class Storage {
-    private static final String READ_FILE_PATH = "data/list.txt";
-    private static final String WRITE_FILE_PATH = "data/list.txt";
+    private static final String READ_FILE_PATH = "src/main/resources/data/list.txt";
+    private static final String WRITE_FILE_PATH = "src/main/resources/data/list.txt";
     private Scanner scanner;
 
     /**
