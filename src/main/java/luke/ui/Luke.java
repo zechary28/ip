@@ -67,32 +67,13 @@ public class Luke {
         } else if (command.equals("unmark")) {
             markTask(Integer.parseInt(inputArr[1]) - 1, false);
         } else if (command.equals("list")) {
-            printList();
+            printList(this.taskList.getList());
         } else if (command.equals("delete")) {
             deleteTask(Integer.parseInt(inputArr[1]) - 1);
         } else if (command.equals("find")) {
             findTask(inputArr[1]);
         } else { // add tasks
-            try {
-                String taskType = command;
-                if (taskType.equals("todo")) {
-                    Task task = parseToDo(input);
-                    this.taskList.addTask(task);
-                    showTaskUpdates(task);
-                } else if (taskType.equals("deadline")) {
-                    Task task = parseDeadline(input);
-                    this.taskList.addTask(task);
-                    showTaskUpdates(task);
-                } else if (taskType.equals("event")) {
-                    Task task = parseEvent(input);
-                    this.taskList.addTask(task);
-                    showTaskUpdates(task);
-                } else {
-                    return "I don't understand";
-                }
-            } catch (InvalidInputException e) {
-                return e.getMessage();
-            }
+            handleAddTask(input);
         }
         return this.output.toString();
     }
@@ -204,6 +185,28 @@ public class Luke {
 
     // Task management and UI updates
 
+    public void handleAddTask(String input) {
+        String taskType = input.split(" ")[0];
+        try {
+            if (taskType.equals("todo")) {
+                Task task = parseToDo(input);
+                this.taskList.addTask(task);
+                showTaskUpdates(task);
+            } else if (taskType.equals("deadline")) {
+                Task task = parseDeadline(input);
+                this.taskList.addTask(task);
+                showTaskUpdates(task);
+            } else if (taskType.equals("event")) {
+                Task task = parseEvent(input);
+                this.taskList.addTask(task);
+                showTaskUpdates(task);
+            } else {
+                this.output.append("I don't understand");
+            }
+        } catch (InvalidInputException e) {
+            this.output.append(e.getMessage());
+        }
+    }
     /**
      * Updates the UI and displays a message after a task is added.
      *
@@ -218,10 +221,10 @@ public class Luke {
     /**
      * Prints the list of tasks to the UI.
      */
-    public void printList() {
+    public void printList(ArrayList<Task> tasks) {
         this.output.append(" Here are the tasks in your list:\n");
-        for (int i = 0; i < this.taskList.getSize(); i++) {
-            this.output.append(String.format(" %d.%s", i + 1, this.taskList.getList().get(i)) + "\n");
+        for (int i = 0; i < tasks.size(); i++) {
+            this.output.append(String.format(" %d.%s", i + 1, tasks.get(i)) + "\n");
         }
     }
 
@@ -267,21 +270,17 @@ public class Luke {
         ArrayList<Task> resultList = new ArrayList<>();
         String key = keyword.toUpperCase();
         for (Task task : this.taskList.getList()) { // for each task
-            String[] nameParts = task.getName().split(" ");
-            for (String word : nameParts) { // check through full name
-                if (word.toUpperCase().equals(key)) {
-                    resultList.add(task);
-                }
+            String upperCaseTaskName = task.getName().toUpperCase();
+            String upperCaseKey = keyword.toUpperCase();
+            if (upperCaseTaskName.contains(upperCaseKey)) {
+                resultList.add(task);
             }
         }
         // print list
         if (resultList.isEmpty()) {
             this.output.append("There were no matches found.\n");
         } else {
-            this.output.append(" Here are the matching tasks in your list:\n");
-            for (int i = 0; i < this.taskList.getSize(); i++) {
-                this.output.append(String.format(" %d.%s", i + 1, this.taskList.getList().get(i)) + "\n");
-            }
+            printList(resultList);
         }
     }
 
@@ -298,7 +297,7 @@ public class Luke {
             isFound = false;
         } finally {
             if (isFound) {
-                printList();
+                printList(this.taskList.getList());
             }
         }
     }
@@ -329,39 +328,51 @@ public class Luke {
      * @throws InvalidInputException if the task data is invalid
      */
     public Task readTask(String input) throws InvalidInputException {
-        String[] task = input.split(" : ");
-        String taskType = task[0];
+        String[] taskParts = input.split(" : ");
+        String taskType = taskParts[0];
         if (taskType.equals("T")) {
-            if (task.length < 3) {
-                this.output.append("len < 3\n");
-                throw new InvalidInputException();
-            }
-            boolean isDone = task[1].equals("1");
-            String name = task[2];
-            return new ToDo(name, isDone);
+            return readToDo(taskParts);
         } else if (taskType.equals("D")) {
-            if (task.length < 4) {
-                this.output.append("len < 4\n");
-                throw new InvalidInputException();
-            }
-            boolean isDone = task[1].equals("1");
-            String name = task[2];
-            String deadline = task[3];
-            return new Deadline(name, isDone, deadline);
+            return readDeadline(taskParts);
         } else if (taskType.equals("E")) {
-            if (task.length < 5) {
-                this.output.append("len < 5\n");
-                throw new InvalidInputException();
-            }
-            boolean isDone = task[1].equals("1");
-            String name = task[2];
-            String start = task[3];
-            String end = task[4];
-            return new Event(name, isDone, start, end);
+            return readEvent(taskParts);
         } else {
             this.output.append("invalid command\n");
             throw new InvalidInputException();
         }
+    }
+
+    public Task readToDo(String[] inputArr) throws InvalidInputException {
+        if (inputArr.length < 3) {
+            this.output.append("len < 3\n");
+            throw new InvalidInputException();
+        }
+        boolean isDone = inputArr[1].equals("1");
+        String name = inputArr[2];
+        return new ToDo(name, isDone);
+    }
+
+    public Task readDeadline(String[] inputArr) throws InvalidInputException {
+        if (inputArr.length < 4) {
+            this.output.append("len < 4\n");
+            throw new InvalidInputException();
+        }
+        boolean isDone = inputArr[1].equals("1");
+        String name = inputArr[2];
+        String deadline = inputArr[3];
+        return new Deadline(name, isDone, deadline);
+    }
+
+    public Task readEvent(String[] inputArr) throws InvalidInputException {
+        if (inputArr.length < 5) {
+            this.output.append("len < 5\n");
+            throw new InvalidInputException();
+        }
+        boolean isDone = inputArr[1].equals("1");
+        String name = inputArr[2];
+        String start = inputArr[3];
+        String end = inputArr[4];
+        return new Event(name, isDone, start, end);
     }
 
     /**
@@ -376,16 +387,20 @@ public class Luke {
         for (Task task : taskList.getList()) {
             if (task instanceof ToDo) {
                 ToDo todo = (ToDo) task;
-                this.storage.writeLine(String.format("T : %s : %s", todo.getIsDone() ? "1" : "0", todo.getName()));
+                this.storage.writeLine(String.format("T : %s : %s",
+                        todo.getIsDone() ? "1" : "0",
+                        todo.getName()));
             } else if (task instanceof Deadline) {
                 Deadline deadline = (Deadline) task;
                 this.storage.writeLine(String.format("D : %s : %s : %s",
-                        deadline.getIsDone() ? "1" : "0", deadline.getName(),
+                        deadline.getIsDone() ? "1" : "0",
+                        deadline.getName(),
                         deadline.getDueTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
             } else if (task instanceof Event) {
                 Event event = (Event) task;
                 this.storage.writeLine(String.format("E : %s : %s : %s : %s",
-                        event.getIsDone() ? "1" : "0", event.getName(),
+                        event.getIsDone() ? "1" : "0",
+                        event.getName(),
                         event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
                         event.getEndTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
             }
