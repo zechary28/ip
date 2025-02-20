@@ -61,7 +61,6 @@ public class Storage {
      * @throws IOException if an I/O error occurs while writing to the file
      */
     public void writeLine(String textToAdd) throws IOException {
-        System.out.println("WRITING LINE TO FILE");
         String writeFilePath = isJar ? JAR_WRITE_FILE_PATH : WRITE_FILE_PATH;
 
         // Create directory if it doesn't exist

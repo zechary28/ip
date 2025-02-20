@@ -223,6 +223,15 @@ public class Luke {
         this.output.append("Now you have " + taskList.getSize() + " tasks in the list.\n");
     }
 
+    public boolean checkIndex(int i) {
+        if (i >= taskList.getSize()) {
+            this.output.append("There are only " + taskList.getSize() + " tasks in the list");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /**
      * Prints the list of tasks to the UI.
      */
@@ -240,6 +249,9 @@ public class Luke {
      * @param isDone whether the task should be marked as done
      */
     public void markTask(int i, boolean isDone) {
+        if (!checkIndex(i)) {
+            return;
+        }
         Task task = this.taskList.getTask(i);
         task.setIsDone(isDone);
         if (isDone) {
@@ -257,6 +269,9 @@ public class Luke {
      * @param i the index of the task to delete
      */
     public void deleteTask(int i) {
+        if (!checkIndex(i)) {
+            return;
+        }
         Task task = this.taskList.deleteTask(i);
         this.output.append("Noted. I've removed this task: \n");
         this.output.append("  " + task + "\n");
@@ -431,7 +446,6 @@ public class Luke {
      * @throws IOException if an I/O error occurs while writing to the file
      */
     public void writeListToFile() {
-        System.out.println("WRITING LIST TO FILE");
         try {
             if (this.storage.hasWriteFile()) {
                 this.storage.clearFile();
