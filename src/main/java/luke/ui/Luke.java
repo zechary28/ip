@@ -54,7 +54,7 @@ public class Luke {
         }
         // determine command
         String[] inputArr = input.split(" ");
-        String command = inputArr[0];
+        String command = inputArr[0].toLowerCase();
         if (command.equals("bye")) {
             try {
                 writeListToFile();
@@ -88,7 +88,6 @@ public class Luke {
     }
 
     public String getShutDown() {
-        System.out.println("GETTING SHUTDOWN");
         this.output = new StringBuilder();
         writeListToFile();
         this.output.append(this.ui.exit()).append("\n");
@@ -190,7 +189,7 @@ public class Luke {
     // Task management and UI updates
 
     public void handleAddTask(String input) {
-        String taskType = input.split(" ")[0];
+        String taskType = input.split(" ")[0].toLowerCase();
         try {
             if (taskType.equals("todo")) {
                 Task task = parseToDo(input);

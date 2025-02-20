@@ -1,4 +1,4 @@
-list: 7
+list: 8
 T : 1 : aaa
 T : 1 : bbb
 T : 1 : ccc
@@ -6,3 +6,4 @@ T : 1 : ddd
 T : 1 : eee
 T : 1 : fff
 T : 1 : test
+T : 0 : FFFF
