@@ -1,9 +1,8 @@
-list: 8
-T : 1 : eat
-E : 0 : sleep : 30/12/2025 22:00 : 31/12/2025 06:00
-D : 1 : shit : 03/02/2025 13:00
-T : 1 : eat more
-D : 0 : 2103 iP : 31/01/3099 23:59
-T : 0 : dinner
-T : 1 : supper
-T : 0 : hello world
+list: 7
+T : 1 : aaa
+T : 1 : bbb
+T : 1 : ccc
+T : 1 : ddd
+T : 1 : eee
+T : 1 : fff
+T : 1 : test

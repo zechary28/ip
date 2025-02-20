@@ -88,12 +88,9 @@ public class Luke {
     }
 
     public String getShutDown() {
+        System.out.println("GETTING SHUTDOWN");
         this.output = new StringBuilder();
-        try {
-            writeListToFile();
-        } catch (Exception e) {
-            this.output.append("There was a problem writing to the file\n");
-        }
+        writeListToFile();
         this.output.append(this.ui.exit()).append("\n");
         return this.output.toString();
     }
@@ -345,17 +342,9 @@ public class Luke {
      * Checks if a saved task list file exists and loads it, or creates a new list if no file is found.
      */
     public void checkListFile() {
-        boolean isFound = true;
-        try {
-            readListFile();
-        } catch (FileNotFoundException e) {
-            this.output.append("No list found\n");
-            this.output.append("Creating new list...\n");
-            isFound = false;
-        } finally {
-            if (isFound) {
-                printList(this.taskList.getList());
-            }
+        boolean isFound = readListFile();
+        if (isFound) {
+            printList(this.taskList.getList());
         }
     }
 
@@ -364,8 +353,11 @@ public class Luke {
      *
      * @throws FileNotFoundException if the storage file is not found
      */
-    public void readListFile() throws FileNotFoundException {
+    public boolean readListFile() {
         String header = this.storage.readLine();
+        if (header.isEmpty()) {
+            return false;
+        }
         while (this.storage.hasNext()) {
             String task = this.storage.readLine();
             try {
@@ -375,6 +367,7 @@ public class Luke {
                 this.output.append(" " + task + "\n");
             }
         }
+        return true;
     }
 
     /**
@@ -437,31 +430,39 @@ public class Luke {
      *
      * @throws IOException if an I/O error occurs while writing to the file
      */
-    public void writeListToFile() throws IOException {
-        this.storage.clearFile();
-        this.output.append("Saving list...\n");
-        storage.writeLine(String.format("list: %d", this.taskList.getSize()));
-        for (Task task : taskList.getList()) {
-            if (task instanceof ToDo) {
-                ToDo todo = (ToDo) task;
-                this.storage.writeLine(String.format("T : %s : %s",
-                        todo.getIsDone() ? "1" : "0",
-                        todo.getName()));
-            } else if (task instanceof Deadline) {
-                Deadline deadline = (Deadline) task;
-                this.storage.writeLine(String.format("D : %s : %s : %s",
-                        deadline.getIsDone() ? "1" : "0",
-                        deadline.getName(),
-                        deadline.getDueTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
-            } else if (task instanceof Event) {
-                Event event = (Event) task;
-                this.storage.writeLine(String.format("E : %s : %s : %s : %s",
-                        event.getIsDone() ? "1" : "0",
-                        event.getName(),
-                        event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
-                        event.getEndTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+    public void writeListToFile() {
+        System.out.println("WRITING LIST TO FILE");
+        try {
+            if (this.storage.hasWriteFile()) {
+                this.storage.clearFile();
             }
+            this.output.append("Saving list...\n");
+            storage.writeLine(String.format("list: %d", this.taskList.getSize()));
+            int numTasks = taskList.getSize();
+            for (Task task : taskList.getList()) {
+                if (task instanceof ToDo) {
+                    ToDo todo = (ToDo) task;
+                    this.storage.writeLine(String.format("T : %s : %s",
+                            todo.getIsDone() ? "1" : "0",
+                            todo.getName()));
+                } else if (task instanceof Deadline) {
+                    Deadline deadline = (Deadline) task;
+                    this.storage.writeLine(String.format("D : %s : %s : %s",
+                            deadline.getIsDone() ? "1" : "0",
+                            deadline.getName(),
+                            deadline.getDueTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+                } else if (task instanceof Event) {
+                    Event event = (Event) task;
+                    this.storage.writeLine(String.format("E : %s : %s : %s : %s",
+                            event.getIsDone() ? "1" : "0",
+                            event.getName(),
+                            event.getStartTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
+                            event.getEndTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))));
+                }
+            }
+            this.output.append("Saved successfully\n");
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
-        this.output.append("Saved successfully\n");
     }
 }

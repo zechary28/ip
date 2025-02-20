@@ -57,6 +57,7 @@ public class MainWindow extends AnchorPane {
     }
 
     public void handleShutDown() {
+        System.out.println("HANDLING SHUTDOWN");
         dialogContainer.getChildren().addAll(
                 DialogBox.getDukeDialog(luke.getShutDown(), dukeImage)
         );
