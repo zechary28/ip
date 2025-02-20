@@ -7,13 +7,13 @@
 }
 
 .text-field {
-    -fx-background-color: #d9ffe2;
-    -fx-font: 20px "Arial";
+    -fx-background-color: #cceeff;
+    -fx-font: 20px "Consolas";
 }
 
 .button {
-    -fx-background-color: mediumspringgreen;
-    -fx-font: italic bold 16px "Arial";
+    -fx-background-color: lightblue;
+    -fx-font: bold 16px "Consolas";
 }
 
 .button:hover {
