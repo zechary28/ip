@@ -1,9 +1,11 @@
-list: 8
+list: 10
+T : 0 : FFFF
 T : 1 : aaa
 T : 1 : bbb
 T : 1 : ccc
 T : 1 : ddd
 T : 1 : eee
 T : 1 : fff
+T : 1 : finish assignment
 T : 1 : test
-T : 0 : FFFF
+D : 0 : adad : 29/11/1232 12:34

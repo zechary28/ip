@@ -55,7 +55,20 @@ public class Luke {
         // determine command
         String[] inputArr = input.split(" ");
         String command = inputArr[0].toLowerCase();
-        if (command.equals("bye")) {
+        if (command.equals("help")) {
+            this.output.append("list of commands:\n");
+            this.output.append("todo     : add todo task\n");
+            this.output.append("deadline : add deadline task\n");
+            this.output.append("event    : add event task\n");
+            this.output.append("list     : show list of all tasks\n");
+            this.output.append("mark n   : mark task n as done\n");
+            this.output.append("unmark n : unmark task n as not done\n");
+            this.output.append("delete n : delete task n from list\n");
+            this.output.append("find     : search list by keyword\n");
+            this.output.append("sort     : show list in sorted order\n");
+            this.output.append("sort a   : show sorted list and apply sort\n");
+            this.output.append("bye      : save list and exit program\n");
+        } else if (command.equals("bye")) {
             try {
                 writeListToFile();
             } catch (Exception e) {
@@ -73,7 +86,13 @@ public class Luke {
         } else if (command.equals("find")) {
             findTask(inputArr[1]);
         } else if (command.equals("sort")) {
-            showSortedList();
+            boolean isApply = true;
+            try {
+                isApply = !inputArr[1].isEmpty();
+            } catch (ArrayIndexOutOfBoundsException e) {
+                isApply = false;
+            }
+            showSortedList(isApply);
         } else { // add tasks
             handleAddTask(input);
         }
@@ -106,7 +125,7 @@ public class Luke {
     public Task parseToDo(String input) throws InvalidInputException {
         // invalid input: [todo] or [todo ]
         if (input.length() < 5 || input.substring(5).trim().isEmpty()) {
-            this.output.append("invalid input: [todo] or [todo ]\n");
+            this.output.append("Todo format: [todo] [name]\n");
             throw new InvalidInputException();
         }
         String name = input.substring(5);
@@ -126,13 +145,13 @@ public class Luke {
     public Task parseDeadline(String input) throws InvalidInputException {
         // invalid input: [deadline] or [deadline ]
         if (input.length() < 9 || input.substring(9).trim().isEmpty()) {
-            this.output.append("invalid input: [deadline] or [deadline ]\n");
+            this.output.append("Deadline format: deadline [name] /by [DD/MM/YYYY HH:MM]\n");
             throw new InvalidInputException();
         }
         String[] inputArr = input.substring(9).split(" /by ");
         // invalid input: [deadline *** /by ] or [deadline /by ***]
         if (inputArr.length < 2) {
-            this.output.append("invalid input: [deadline *** /by ] or [deadline /by ***]\n");
+            this.output.append("Deadline format: deadline [name] /by [DD/MM/YYYY HH:MM]\n");
             throw new InvalidInputException();
         }
         String name = inputArr[0];
@@ -155,7 +174,7 @@ public class Luke {
     public Task parseEvent(String input) throws InvalidInputException {
         // invalid input: [event] or [event ]
         if (input.length() < 6 || input.substring(6).trim().isEmpty()) {
-            this.output.append("invalid input: [event] or [event ]\n");
+            this.output.append("Event format: event [name] /from [DD/MM/YYYY HH:MM] /to [DD/MM/YYYY HH:MM]\n");
             throw new InvalidInputException();
         }
 
@@ -163,7 +182,7 @@ public class Luke {
         String[] inputArr = input.substring(6).split(" /from ");
         // invalid input: [event *** /from ] or [event /from ***]
         if (inputArr.length < 2) {
-            this.output.append("invalid input: [event *** /from ] or [event /from ***]\n");
+            this.output.append("Event format: event [name] /from [DD/MM/YYYY HH:MM] /to [DD/MM/YYYY HH:MM]\n");
             throw new InvalidInputException();
         }
         input = inputArr[1];
@@ -173,7 +192,7 @@ public class Luke {
         inputArr = input.split(" /to ");
         // invalid input: [event *** /from *** /to ] or [event *** /from /to ***]
         if (inputArr.length < 2) {
-            this.output.append("invalid input: [event *** /from *** /to ] or [event *** /from /to ***]\n");
+            this.output.append("Event format: event [name] /from [DD/MM/YYYY HH:MM] /to [DD/MM/YYYY HH:MM]\n");
             throw new InvalidInputException();
         }
         String start = inputArr[0];
@@ -344,12 +363,18 @@ public class Luke {
         }
     }
 
-    public void showSortedList() {
+    public void showSortedList(boolean apply) {
         // clone list
+        if (apply) {
+            ArrayList<Task> currList = this.taskList.getList();
+            mergeSort(currList, 0, this.taskList.getSize() - 1);
+            printList(currList);
+        } else {
         ArrayList<Task> cloneList = new ArrayList<>();
         cloneList.addAll(this.taskList.getList());
         mergeSort(cloneList, 0, cloneList.size() - 1);
         printList(cloneList);
+        }
     }
 
     /**
