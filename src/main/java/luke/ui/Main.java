@@ -34,7 +34,7 @@ public class Main extends Application {
             // get controller
             MainWindow controller = fxmlLoader.<MainWindow>getController();
 
-            controller.setDuke(luke);  // inject the Duke instance
+            controller.setDuke(luke); // inject the Duke instance
 
             // bind lifecycle events
             stage.setOnShown(event -> controller.handleStartUp());

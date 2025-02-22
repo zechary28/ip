@@ -82,10 +82,29 @@ public class Deadline extends Task {
                 this.name, this.dueTime.format(DateTimeFormatter.ofPattern("dd MMM yyyy")));
     }
 
+    /**
+     * Compares this deadline task to another task for ordering.
+     *
+     * The comparison is performed based on the following criteria:
+     * 1. If the other task is an instance of ToDo, this deadline task is considered larger
+     *    (ToDo < Deadline < Event < everything else).
+     * 2. If the other task is also an instance of Deadline:
+     *    - First, compare their "done" statuses. Tasks that are not done come before
+     *      tasks that are done.
+     *    - If the "done" statuses are the same, compare their due times using
+     *      the dueTime property.
+     * 3. For all other task types, this deadline task is considered smaller
+     *    (ToDo < Deadline < Event < everything else).
+     *
+     * @param t the task to be compared with this deadline task.
+     * @return a negative integer, zero, or a positive integer as this deadline task
+     *         is less than, equal to, or greater than the specified task.
+     * @throws NullPointerException if the specified task is null.
+     */
     public int compareTo(Task t) {
         if (t instanceof ToDo) { // todo < deadline < event < everything else
             return 1;
-        } else if (t instanceof Deadline){ // sort by time
+        } else if (t instanceof Deadline) { // sort by time
             if (this.isDone != t.isDone) {
                 return this.isDone ? 1 : -1;
             } else {

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 /**
@@ -54,8 +53,9 @@ public class Storage {
     }
 
     /**
-     * Writes the specified text to the file located at WRITE_FILE_PATH.
+     * Writes the specified text to the file located at WRITE_FILE_PATH or JAR_WRITE_FILE_PATH.
      * A new line is added after the text.
+     * Creates directory and file if directory or file does not exist
      *
      * @param textToAdd the text to be written to the file
      * @throws IOException if an I/O error occurs while writing to the file
@@ -93,7 +93,7 @@ public class Storage {
     }
 
     /**
-     * Checks if the file located at the READ_FILE_PATH exists and can be written to.
+     * Checks if the file located at the READ_FILE_PATH or JAR_READ_FILE_PATH exists and can be written to.
      *
      * @return true if the file is accessible for writing, false otherwise
      */
@@ -108,7 +108,7 @@ public class Storage {
     }
 
     /**
-     * Checks if the file located at the WRITE_FILE_PATH exists and can be written to.
+     * Checks if the file located at the WRITE_FILE_PATH or JAR_WRITE_FILE_PATH exists and can be written to.
      *
      * @return true if the file is accessible for writing, false otherwise
      */
@@ -133,9 +133,4 @@ public class Storage {
         new FileWriter(writeFilePath, false).close();
     }
 
-    public File createEmptyFile() throws IOException {
-        File file = new File(JAR_READ_FILE_PATH);
-        file.getParentFile().mkdirs(); // Create parent directories if they don't exist
-        return file;
-    }
 }

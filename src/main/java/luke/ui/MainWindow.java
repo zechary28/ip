@@ -50,12 +50,24 @@ public class MainWindow extends AnchorPane {
         userInput.clear();
     }
 
+    /**
+     * Handles the startup sequence by adding a startup dialog to the dialog container.
+     *
+     * This method retrieves the startup message from the `luke` object and displays it
+     * in the user interface as a dialog box, along with the associated Duke image.
+     */
     public void handleStartUp() {
         dialogContainer.getChildren().addAll(
                 DialogBox.getDukeDialog(luke.getStartUp(), dukeImage)
         );
     }
 
+    /**
+     * Handles the shutdown sequence by adding a shutdown dialog to the dialog container.
+     *
+     * This method retrieves the shutdown message from the `luke` object and displays it
+     * in the user interface as a dialog box, along with the associated Duke image.
+     */
     public void handleShutDown() {
         dialogContainer.getChildren().addAll(
                 DialogBox.getDukeDialog(luke.getShutDown(), dukeImage)
