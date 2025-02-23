@@ -4,6 +4,8 @@
     -fx-background-image: url("../images/background.jpg"); /* Set image */
     -fx-background-size: 450px 450px;
     -fx-background-repeat: repeat;
+    -fx-min-width: 600px;
+    -fx-min-height: 400px;
 }
 
 .text-field {

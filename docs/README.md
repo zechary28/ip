@@ -80,3 +80,5 @@ Contributions are welcome! Please fork the repository and submit a pull request 
 ---
 Feel free to enhance this chatbot by adding more features or improving its existing functionality!
 
+## Credits
+Background by [helloimjimthecat](https://www.vecteezy.com/vector-art/14022441-water-pokemon-pattern)
