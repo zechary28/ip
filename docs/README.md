@@ -68,7 +68,7 @@ Tasks saved. Goodbye!
    ```
    java -jar luke.jar
    ```
-   
+
 
 ## Saving and Loading Tasks
 - Tasks are automatically saved when you use the `bye` command.
